@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>DeDup</h1>
+        <form action="/DeDup/duplicates/" method="post">
+            Base de dados:<br>
+            <input type="text" name="database">
+            <br>
+            Título:<br>
+            <input type="text" name="titulo">
+            <br>
+            Autores:<br>
+            <input type="text" name="autores">
+            <br>
+            Nome da revista:<br>
+            <input type="text" name="nome da revista">
+            <br>
+            Página inicial:<br>
+            <input type="text" name="pagina inicial">
+            <br>
+            Ano de publicação:<br>
+            <input type="text" name="ano de publicacao">
+            <br>
+            Volume:<br>
+            <input type="text" name="volume">
+            <br>
+            Número do fascículo:<br>
+            <input type="text" name="numero do fasciculo">
+            <br>
+            Tipo de literatura:<br>
+            <input type="text" name="tipo de literatura">
+            <br>
+            Nível de tratamento:<br>
+            <input type="text" name="nivel de tratamento">
+            <br>
+            <br>
+            Número máximo de documentos a serem retornados:<br>
+            <input type="text" name="nivel de tratamento" value="10">
+            <br>
+            <br>
+            <input type="submit" value="Pesquisar">
+        </form> 
+    </body>
+</html>
