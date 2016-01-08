@@ -29,7 +29,7 @@ import javax.ws.rs.core.Application;
  * @author Heitor Barbieri
  * date: 20150928
  */
-@javax.ws.rs.ApplicationPath("")
+@javax.ws.rs.ApplicationPath("/services")
 public class ApplicationConfig extends Application {
 
     @Override

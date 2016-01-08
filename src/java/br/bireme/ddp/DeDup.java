@@ -24,12 +24,17 @@ package br.bireme.ddp;
 import br.bireme.ngrams.NGIndex;
 import br.bireme.ngrams.NGSchema;
 import br.bireme.ngrams.NGrams;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -67,8 +72,8 @@ public class DeDup {
     public DeDup() {
     }
 
-    private Instances getInstances() {
-        Instances instances;
+    private Instances getInstances() throws Exception {
+        final Instances instances;
         final Instances inst = (Instances)context.getAttribute("INSTANCES");
 
         if (inst == null) {
@@ -77,11 +82,7 @@ public class DeDup {
                 throw new NullPointerException(
                                   "Init parameter 'DEDUP_CONF_FILE is missing");
             }
-            try {
-                instances = new Instances(confFile);
-            } catch(Exception ex) {
-                instances = null;
-            }
+            instances = new Instances(confFile);
             context.setAttribute("INSTANCES", instances);
         } else {
             instances = inst;
@@ -95,50 +96,51 @@ public class DeDup {
      * http://localhost:8084/DeDup/?database=lilacs&database=medline
      * @param request
      * @param response
-     * @return 
      * @throws javax.servlet.ServletException
      * @throws java.io.IOException
      */
-   /* @GET
-    @Produces("application/json") @Path("/")
+    @GET
+    @Produces("application/json") @Path("")
     public void DeDupApp(@Context final HttpServletRequest request,
                          @Context final HttpServletResponse response)
                                           throws ServletException, IOException {
-        final String nextJSP = "posthtml.html";
+        final String nextJSP = "/posthtml.html";
         System.out.println("path=" + context.getContextPath());
         final RequestDispatcher dispatcher =
                                           context.getRequestDispatcher(nextJSP);
         dispatcher.forward(request,response);
-    }*/
+    }
 
     @GET
     @Produces("application/json") @Path("/schema/{schema}")
     public String showSchema(@PathParam("schema") String schema) {
-        final Instances instances = getInstances();
-        final String json;
+        final Instances instances;
+        String json;
 
-        if (instances == null) {
-            json = "{}";
-        } else {
+        try {
+            instances = getInstances();
             final NGSchema nschema = instances.getSchemas().get(schema);
             if (nschema == null) {
                 json = "{\"ERROR\":\"Schema not found: " + schema + "\"}";
             } else {                
                 json = nschema.getSchemaJson();
             }
-        }
+        } catch(Exception ex) {
+            String msg = ex.getMessage();
+            msg = (msg == null) ? "" : msg.replace('"', '\'');
+            json = "{\"ERROR\":\"" + msg + "\"}";
+        }       
         return json;
     }
 
     @GET
     @Produces("application/json") @Path("/schemas")
     public String showSchemas() {
-        final Instances instances = getInstances();
-        final String json;
+        final Instances instances;
+        String json;
 
-        if (instances == null) {
-            json = "{}";
-        } else {
+        try {
+            instances = getInstances();
             final StringBuilder builder = new StringBuilder("{\"schemas\":[");
             boolean first = true;
             
@@ -154,6 +156,10 @@ public class DeDup {
             }
             builder.append("]}");
             json = builder.toString();
+        } catch(Exception ex) {
+            String msg = ex.getMessage();
+            msg = (msg == null) ? "" : msg.replace('"', '\'');
+            json = "{\"ERROR\":\"" + msg + "\"}";
         }
         return json;
     }
@@ -161,12 +167,11 @@ public class DeDup {
     @GET
     @Produces("application/json") @Path("/databases")
     public String showDatabases() {
-        final Instances instances = getInstances();
-        final String json;
+        final Instances instances;
+        String json;
 
-        if (instances == null) {
-            json = "{}";
-        } else {
+        try {
+            instances = getInstances();
             final StringBuilder builder = new StringBuilder("{\"databases\":[");
             boolean first = true;
         
@@ -182,7 +187,12 @@ public class DeDup {
             }
             builder.append("]}");
             json = builder.toString();
+        } catch(Exception ex) {
+            String msg = ex.getMessage();
+            msg = (msg == null) ? "" : msg.replace('"', '\'');
+            json = "{\"ERROR\":\"" + msg + "\"}";
         }
+        
         return json;
     }
 

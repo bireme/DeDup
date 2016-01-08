@@ -76,6 +76,11 @@ public class Instances {
 
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         final DocumentBuilder db = dbf.newDocumentBuilder();
+        final File file = new File(confFile);
+        
+        if (!file.exists()) {
+            throw new IOException("missing DeDup configuration file:" + confFile);
+        }
         final Document doc = db.parse(new File(confFile));
 
         final Node configNode = doc.getFirstChild();

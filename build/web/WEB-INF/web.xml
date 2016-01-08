@@ -4,7 +4,7 @@
     <context-param>
         <description>DeDup configuration file</description>
         <param-name>DEDUP_CONF_FILE</param-name>
-        <param-value>/home/heitor/Projetos/DeDup/config.cfg</param-value>
+        <param-value>/home/javaapps/DeDup/config.cfg</param-value>
     </context-param>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
