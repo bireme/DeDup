@@ -104,7 +104,8 @@ public class DeDup {
     public void DeDupApp(@Context final HttpServletRequest request,
                          @Context final HttpServletResponse response)
                                           throws ServletException, IOException {
-        final String nextJSP = "/posthtml.html";
+        //final String nextJSP = "/posthtml.html";
+        final String nextJSP = "/DeDup.jsp";
         System.out.println("path=" + context.getContextPath());
         final RequestDispatcher dispatcher =
                                           context.getRequestDispatcher(nextJSP);
@@ -417,7 +418,7 @@ public class DeDup {
 
         for (Map.Entry<String,List<String>> entry : results.entrySet()) {
             final String key = entry.getKey();
-            final List<String> values = entry.getValue();
+            final List<String> values = entry.getValue();            
 
             for (String val : values) {
                 final String[] split = val.split("\\|");
@@ -425,7 +426,8 @@ public class DeDup {
                     throw new IllegalArgumentException("bad result:" + val);
                 }
                 tree.put(Float.parseFloat(split[similarityPos]) + "_" +
-                         Float.parseFloat(split[scorePos]) + "_" + key, val);
+                         Float.parseFloat(split[scorePos]) + "_" + key + 
+                        "_" + tree.size(), val);
             }
         }
 
