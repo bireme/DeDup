@@ -398,7 +398,7 @@ public class DeDup {
             }
             final String val = array[idx];
             if (val != null) {
-                builder.append(val);
+                builder.append(val.replace('|', '!'));
             }
         }
         return builder.toString();
@@ -546,16 +546,18 @@ public class DeDup {
                     boolean first2 = true;
                     builder.append("[");
                     for (String spl : split2) {
+                        final String spl2 = spl.replace('\"' , '\'');
                         if (first2) {
                             first2 = false;
                         } else {
                             builder.append(",");
                         }
-                        builder.append("\"").append(spl).append("\"");
+                        builder.append("\"").append(spl2).append("\"");
                     }
                     builder.append("]");
                 } else {
-                    builder.append("\"").append(content).append("\"");
+                    builder.append("\"").append(content.replace('\"' , '\''))
+                                        .append("\"");
                 }
 
             }
