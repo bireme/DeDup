@@ -143,8 +143,11 @@ function reloadPagePost() {
             <select name="database" id="db">
                 <% 
                    final Set<String> databases = getDatabases(request);
-                   String dbase = request.getParameter("database");
-                   dbase = (dbase == null) ? databases.iterator().next() : dbase;
+                   final Iterator<String> it = databases.iterator();
+                   String dbase = request.getParameter("database");                   
+                   if (dbase == null) {
+                       dbase = (it.hasNext()) ? it.next() : null;
+                   }
                    for (String database : databases) { %>
                     <option value="<%=database%>" 
                     <% if (dbase.equals(database)) { %>
@@ -158,8 +161,11 @@ function reloadPagePost() {
             <select onchange="reloadPage()" name="schema" id="sch">
                 <% 
                     final Set<String> schemas = getSchemas(request);
+                    final Iterator<String> it2 = schemas.iterator();
                     String sch = request.getParameter("schema");
-                    sch = (sch == null) ? schemas.iterator().next() : sch;
+                    if (sch == null) {
+                        sch = (it2.hasNext()) ? it2.next() : null;
+                    }
                     for (String schema : schemas) { %>
                     <option value="<%=schema%>"
                     <% if (sch.equals(schema)) { %>
@@ -192,7 +198,6 @@ function reloadPagePost() {
             <br/>
             <br/>
             <font size="2">&ast; Usar como separador de ocorrências a sequência: &nbsp;<i>//@//</i></font><br/>
-
         </form>
     </body>
 </html>
