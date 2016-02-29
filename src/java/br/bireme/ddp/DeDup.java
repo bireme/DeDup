@@ -199,6 +199,7 @@ public class DeDup {
 
     /**
      * * http://localhost:8084/DeDup/get/duplicates/?database=lilacs&database=medline
+     * @param servletResponse
      * @param dbList
      * @param uriInfo
      * @param schema
@@ -207,12 +208,15 @@ public class DeDup {
      */
     @GET
     @Produces("application/json") @Path("/get/duplicates")
-    public String duplicatesGet(@Context final UriInfo uriInfo,
+    public String duplicatesGet(@Context HttpServletResponse servletResponse,
+                              @Context final UriInfo uriInfo,
                               @QueryParam("database") final List<String> dbList,
                               @QueryParam("schema") final String schema,
                               @QueryParam("token") final String token) {
         String json;
 
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+        
         if ((dbList == null) || dbList.isEmpty()) {
             json = "{\"ERROR\":\"missing 'database' parameter\"}";
         } else if ((schema == null) || schema.isEmpty()) {
@@ -275,12 +279,16 @@ public class DeDup {
     @Path("/duplicates")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
-    public String duplicatesPost(@FormParam("database") final List<String> dbList,
+    public String duplicatesPost(@Context HttpServletResponse servletResponse,
+                                 @FormParam("database") final List<String> dbList,
                                  @FormParam("schema") final String schema,
-                                 @FormParam("token") final String token,
-                                 MultivaluedMap<String, String> formParams) {
+                                 @FormParam("token") final String token,                                 
+                                 MultivaluedMap<String, String> formParams) { 
+        
         String json;
-
+        
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+                
         if ((dbList == null) || dbList.isEmpty()) {
             json = "{\"ERROR\":\"missing 'database' parameter\"}";
         } else if ((schema == null) || schema.isEmpty()) {
