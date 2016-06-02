@@ -49,11 +49,12 @@
         
         try {           
             final String json = readURL("http://localhost:" 
-                        + request.getLocalPort() + "/DeDup/services/databases");
+                        + request.getLocalPort() + "/DeDup/services/indexes");
             final JSONObject obj = (JSONObject)JSONValue.parse(json);
-            final JSONArray array = (JSONArray)obj.get("databases");
+            final JSONArray array = (JSONArray)obj.get("indexes");
             for (Object obj2: array) {
-                databases.add((String)obj2);
+                final String name =  (String)((JSONObject)obj2).get("name");
+                databases.add(name);
             }
             
         } catch(Exception ex) {
@@ -127,6 +128,41 @@ function reloadPagePost() {
     document.body.appendChild(form);
     form.submit();
 }
+
+function putPage(params) {
+    var database = document.getElementById("db");
+    var dbValue = database.options[database.selectedIndex].value;    
+    var schema = document.getElementById("sch");
+    var schValue = schema.options[schema.selectedIndex].value;
+    var id = 1;
+    var path = "/DeDup/services/put/"+ database +"/" + schema + "/" + id;
+    
+    var json = "{\"db\":" + database + "\",\"schema\":\"" + schema + "\"}";
+    
+    /*var form = document.createElement("form");
+    var hiddenField1 = document.createElement("h1");
+    var hiddenField2 = document.createElement("h2");
+    
+    form.setAttribute("charset", "UTF-8");
+    form.setAttribute("method", "post");
+    //form.setAttribute("method", "get");
+    form.setAttribute("action", path);
+    
+    hiddenField1.setAttribute("type", "hidden");
+    hiddenField1.setAttribute("name", "database");
+    hiddenField1.setAttribute("value", dbValue);
+    
+    hiddenField2.setAttribute("type", "hidden");
+    hiddenField2.setAttribute("name", "schema");
+    hiddenField2.setAttribute("value", schValue);
+
+    form.appendChild(hiddenField1);
+    form.appendChild(hiddenField2);
+    
+    document.body.appendChild(form);
+    form.submit();*/
+        
+}
 </script>
 
 <!DOCTYPE html>
@@ -194,6 +230,20 @@ function reloadPagePost() {
             <input type="text" name="quantity" size=2 value="10">
             <br/>
             <br/>
+            <%  
+                boolean first = true;
+                String schs = "[";
+                for (String parameter : getSchema(request, sch)) { 
+                    if (first) {
+                        first = false;
+                    } else {
+                        schs += ",";
+                    }
+                    schs += "\"" + parameter + "\"";                
+                }
+                schs += "]";
+            %>   
+            <button type="button" value="Armazenar" onclick="putPage(<%=schs%>)">Armazenar</button>
             <input type="submit" value="Pesquisar">
             <br/>
             <br/>

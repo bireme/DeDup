@@ -46,7 +46,8 @@ import org.xml.sax.SAXException;
  */
 public class Instances {
     private final Map<String, NGSchema> schemas;
-    private final Map<String, Set<NGIndex>> indexes;
+    private final Map<String, NGIndex> indexes;
+    private final Map<String, Set<NGIndex>> databases; 
 
     public Instances(final String confFile) throws ParserConfigurationException,
                                                    SAXException,
@@ -55,7 +56,8 @@ public class Instances {
             throw new NullPointerException("confFile");
         }
         schemas = new TreeMap<String, NGSchema>();
-        indexes = new TreeMap<String, Set<NGIndex>>();
+        indexes = new TreeMap<String, NGIndex>();
+        databases = new TreeMap<String, Set<NGIndex>>();
 
         parseConfig(confFile);
     }
@@ -64,8 +66,12 @@ public class Instances {
         return schemas;
     }
 
-    public Map<String, Set<NGIndex>> getIndexes() {
+    public Map<String, NGIndex> getIndexes() {
         return indexes;
+    }
+    
+    public Map<String, Set<NGIndex>> getDatabases() {
+        return databases;
     }
 
     private void parseConfig(final String confFile) throws
@@ -90,6 +96,7 @@ public class Instances {
 
         parseSchemas(configNode);
         parseIndexes(configNode);
+        //parseDatabases(configNode);
     }
 
     final void parseSchemas(final Node config) throws
@@ -121,14 +128,40 @@ public class Instances {
             if (indexes.containsKey(name)) {
                 throw new IOException("duplicated index name:" + name);
             }
-            final Set<NGIndex> ngi = new HashSet<NGIndex>();
-            indexes.put(name, ngi);
-
-            for (Node pathNode : getNodes(idxNode, "path")) {
-                ngi.add(new NGIndex(name, pathNode.getTextContent()));
+            final String schemaName = getChildContent(idxNode, "schema");
+            final NGSchema schema = schemas.get(schemaName);
+            if (schema == null) {
+                throw new IOException("missing index/schema element");
             }
-            if (ngi.isEmpty()) {
-                throw new IOException("missing index/path element");
+            final String path = getChildContent(idxNode, "path");
+            final NGIndex index = new NGIndex(name, path, schema);
+            indexes.put(name, index);
+        }
+    }
+    
+    final void parseDatabases(final Node config) throws
+                                                   ParserConfigurationException,
+                                                   SAXException,
+                                                   IOException {
+        assert config != null;
+
+        for (Node dbNode : getNodes(config, "database")) {
+            final String name = getChildContent(dbNode, "name");
+            if (databases.containsKey(name)) {
+                throw new IOException("duplicated database name:" + name);
+            }
+            final Set<NGIndex> hngi = new HashSet<NGIndex>();
+            databases.put(name, hngi);
+
+            for (Node idxNode : getNodes(dbNode, "index")) {
+                final NGIndex ngi = indexes.get(idxNode.getTextContent());
+                if (ngi == null) {
+                    throw new IOException("missing database/index element");
+                }
+                hngi.add(ngi);
+            }
+            if (hngi.isEmpty()) {
+                throw new IOException("missing database/index element");
             }
         }
     }
@@ -172,6 +205,6 @@ public class Instances {
             throw new IOException("missing '" + childName + "' node");
         }
 
-        return content;
+        return content.trim();
     }
 }

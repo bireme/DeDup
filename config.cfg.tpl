@@ -25,7 +25,5 @@
     <index>
         <name></name>
         <path></path>
-        <path></path>
-        <path></path>
     </index>
 </config>

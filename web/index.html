@@ -25,10 +25,9 @@ and open the template in the editor.
         <p><i>produces:</i> application/json</p>
         <p><i>parameters:</i> &lt;none&gt;</p>
 
-        <h2>3) Show Databases</h2>
-        <p><i>description: Show all availables index sets in this service. Each
-        index set is defined by the schema definition.</i></p>
-        <p><i>path:</i> http://&lt;host&gt;:&lt;port&gt;/DeDup/services/databases</p>
+        <h2>3) Show Indexes</h2>
+        <p><i>description: Show all available index names in this service</i></p>
+        <p><i>path:</i> http://&lt;host&gt;:&lt;port&gt;/DeDup/services/indexes</p>
         <p><i>method:</i> GET</p>
         <p><i>consumes:</i> &lt;none&gt;</p>
         <p><i>produces:</i> application/json</p>
@@ -49,7 +48,7 @@ and open the template in the editor.
         <p><i>consumes:</i></p>
         <p><i>produces:</i> application/json</p>
         <p><i>parameters:</i><br/>
-           &lt;database&gt; - database name. See 'Show Databases'. <br/>
+           &lt;database&gt; - index name. See 'Show Indexes'. Repetitive parameter.<br/>
            &lt;schema&gt; - schema name. See 'Show Schemas'.<br/>
            &lt;quantity&gt; - number of similar/equal douments to be showed.<br/>
            &lt;param1&gt; - document field 1 as defined in schema. See 'Show One Schema'.<br/>
@@ -65,13 +64,25 @@ and open the template in the editor.
         <p><i>consumes:</i> application/x-www-form-urlencoded</p>
         <p><i>produces:</i> application/json</p>
         <p><i>parameters:</i><br/>
-           &lt;database&gt; - database name. See 'Show Databases'.<br/>
+           &lt;database&gt; - index name. See 'Show Indexes'. Repetitive parameter.<br/>
            &lt;schema&gt; - schema name. See 'Show Schemas'.<br/>
-           &lt;quantity&gt; - number of similar/equal douments to be showed.<br/>
-           &lt;param1&gt; - document field 1 as defined in schema. See 'Show One Schema'.<br/>
-           &lt;param2&gt; - document field 2 as defined in schema. See 'Show One Schema'.<br/>
+           &lt;quantity&gt; - number of similar/equal documents to be showed. Post param<br/>
+           &lt;param1&gt; - document field 1 as defined in schema. See 'Show One Schema'. Post param<br/>
+           &lt;param2&gt; - document field 2 as defined in schema. See 'Show One Schema'. Post param<br/>
            ...<br/>
-           &lt;paramN&gt; - document field N as defined in schema. See 'Show One Schema'.<br/>
+           &lt;paramN&gt; - document field N as defined in schema. See 'Show One Schema'. Post param<br/>
         </p>
+        
+        <h2>7) Put Document</h2>
+        <p><i>description:</i> Add a documento into a database index(es)</p>
+        <p><i>path:</i> http://&lt;host&gt;:&lt;port&gt;/DeDup/services/put/&lt;database&gt;/&lt;schema&gt;/&lt;id&gt;</p>
+        <p><i>method:</i> POST</p>
+        <p><i>consumes:</i> application/json</p>
+        <p><i>produces:</i> application/json</p>
+        <p><i>parameters:</i><br/>
+           &lt;database&gt; - index name. See 'Show Indexes'. Repetitive parameter.<br/>
+           &lt;schema&gt; - schema name. See 'Show Schemas'.<br/>
+           &lt;id&gt; - document id.<br/>           
+        </p>        
     </body>
 </html>
