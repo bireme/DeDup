@@ -47,6 +47,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+import org.apache.lucene.index.IndexWriter;
 
 /**
  * REST Web Service - Find Duplicated Records
@@ -77,12 +78,13 @@ public class DeDup {
         final Instances inst = (Instances)context.getAttribute("INSTANCES");
 
         if (inst == null) {
+            final String workDir = context.getInitParameter("DEDUP_WORK_DIR");
             final String confFile = context.getInitParameter("DEDUP_CONF_FILE");
             if (confFile == null) {
                 throw new NullPointerException(
                                   "Init parameter 'DEDUP_CONF_FILE is missing");
             }
-            instances = new Instances(confFile);
+            instances = new Instances(workDir, confFile);
             context.setAttribute("INSTANCES", instances);
         } else {
             instances = inst;
@@ -106,7 +108,7 @@ public class DeDup {
                                           throws ServletException, IOException {
         //final String nextJSP = "/posthtml.html";
         final String nextJSP = "/DeDup.jsp";
-        System.out.println("path=" + context.getContextPath());
+        //System.out.println("path=" + context.getContextPath());
         final RequestDispatcher dispatcher =
                                           context.getRequestDispatcher(nextJSP);
         dispatcher.forward(request,response);
@@ -183,11 +185,9 @@ public class DeDup {
                 } else {
                     builder.append(",");
                 }
-                builder.append("{\"name\":\"");
+                builder.append("\"");
                 builder.append(entry.getKey());
-                builder.append("\",\"schema\":\"");
-                builder.append(entry.getValue().getSchema().getName());
-                builder.append("\"}");
+                builder.append("\"");
             }
             builder.append("]}");
             json = builder.toString();
@@ -340,8 +340,8 @@ public class DeDup {
     
     @POST
     @Path("/put/{database}/{schema}/{id}")
-    @Consumes("application/json")
-    @Produces("application/json")
+    @Consumes("application/json;charset=utf-8")
+    @Produces("application/json;charset=utf-8")
     public String putDocument(@Context HttpServletResponse servletResponse,
                               @PathParam("database") final List<String> indexList,
                               @PathParam("schema") String schema,
@@ -360,6 +360,7 @@ public class DeDup {
         } else if ((schema == null) || schema.isEmpty()) {
             json = "{\"ERROR\":\"missing 'schema' parameter\"}"; 
         } else {
+            IndexWriter writer = null;
             try {
                 final Instances instances = getInstances();
                 final Map<String, NGIndex> indexes = instances.getIndexes();
@@ -381,7 +382,9 @@ public class DeDup {
                         }
                         final String pipedDoc = NGrams.json2pipe(nschema, 
                                                      index.getName(), id, jdoc);
-                        if (NGrams.indexDocument(index, nschema, pipedDoc)) {
+                        writer = index.getIndexWriter();
+                        if (NGrams.indexDocument(index, writer, nschema, 
+                                                                    pipedDoc)) {
                             if (first) first = false; else json += ",";
                             json += "\"" + index.getName() + "\"";
                         }                        
@@ -392,7 +395,14 @@ public class DeDup {
                 String msg = ex.getMessage();
                 msg = (msg == null) ? "" : msg.replace('"', '\'');
                 json = "{\"ERROR\":\"" + msg + "\"}";
-            }    
+            } finally {
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch(Exception ex) {
+                    }                    
+                }
+            }   
         }
         
         return json;        
@@ -413,8 +423,8 @@ public class DeDup {
 
     @POST
     @Path("/xxx")
-    @Consumes("application/json")
-    @Produces("application/json")     
+    @Consumes("application/json; charset=utf-8")
+    @Produces("application/json; charset=utf-8")     
     public String xxx(@Context HttpServletResponse servletResponse,
                       final String json) {
                      

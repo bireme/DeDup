@@ -53,10 +53,8 @@
             final JSONObject obj = (JSONObject)JSONValue.parse(json);
             final JSONArray array = (JSONArray)obj.get("indexes");
             for (Object obj2: array) {
-                final String name =  (String)((JSONObject)obj2).get("name");
-                databases.add(name);
-            }
-            
+                databases.add((String)obj2);
+            }            
         } catch(Exception ex) {
             final String str = ex.getMessage();
             System.out.println(str);
@@ -129,39 +127,42 @@ function reloadPagePost() {
     form.submit();
 }
 
-function putPage(params) {
+function teste() {        
+    alert("Debug da funcao teste()");
+}
+
+function putPage() {
     var database = document.getElementById("db");
     var dbValue = database.options[database.selectedIndex].value;    
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
-    var id = 1;
-    var path = "/DeDup/services/put/"+ database +"/" + schema + "/" + id;
+    var id = "only_for_test";
+    var path = "/DeDup/services/put/"+ dbValue +"/" + schValue + "/" + id;
     
-    var json = "{\"db\":" + database + "\",\"schema\":\"" + schema + "\"}";
+    var json = "{\"db\":\"" + dbValue + "\",\"schema\":\"" + schValue + "\"";
+    var inputs = document.getElementsByTagName("*");
+    for (var i = 0; i < inputs.length; i++) {
+        if (typeof inputs[i].type !== 'undefined') {
+            var typeName = inputs[i].type.toLowerCase();
+            if ((typeName === 'text') && (inputs[i].name !== 'quantity')) {
+                json += ",\"" + inputs[i].name + "\":\"" + inputs[i].value + "\"";
+            }
+        }
+    }
+    json += "}";
     
-    /*var form = document.createElement("form");
-    var hiddenField1 = document.createElement("h1");
-    var hiddenField2 = document.createElement("h2");
-    
-    form.setAttribute("charset", "UTF-8");
-    form.setAttribute("method", "post");
-    //form.setAttribute("method", "get");
-    form.setAttribute("action", path);
-    
-    hiddenField1.setAttribute("type", "hidden");
-    hiddenField1.setAttribute("name", "database");
-    hiddenField1.setAttribute("value", dbValue);
-    
-    hiddenField2.setAttribute("type", "hidden");
-    hiddenField2.setAttribute("name", "schema");
-    hiddenField2.setAttribute("value", schValue);
-
-    form.appendChild(hiddenField1);
-    form.appendChild(hiddenField2);
-    
-    document.body.appendChild(form);
-    form.submit();*/
-        
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', path);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) { 
+            //return xhr.responseText;
+            return "<html><h1>OK - inserted</h1></html>";
+        } else {
+            //alert(xhr.responseText);
+        }
+    };
+    xhr.send(json);
 }
 </script>
 
@@ -243,7 +244,8 @@ function putPage(params) {
                 }
                 schs += "]";
             %>   
-            <button type="button" value="Armazenar" onclick="putPage(<%=schs%>)">Armazenar</button>
+            <!--button type="button" value="Armazenar" onclick="putPage(<%=schs%>)">Armazenar</button-->
+            <button type="button" value="Armazenar" onclick="putPage()">Armazenar</button>
             <input type="submit" value="Pesquisar">
             <br/>
             <br/>

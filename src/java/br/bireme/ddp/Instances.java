@@ -49,7 +49,8 @@ public class Instances {
     private final Map<String, NGIndex> indexes;
     private final Map<String, Set<NGIndex>> databases; 
 
-    public Instances(final String confFile) throws ParserConfigurationException,
+    public Instances(final String workDir,
+                     final String confFile) throws ParserConfigurationException,
                                                    SAXException,
                                                    IOException {
         if (confFile == null) {
@@ -59,7 +60,7 @@ public class Instances {
         indexes = new TreeMap<String, NGIndex>();
         databases = new TreeMap<String, Set<NGIndex>>();
 
-        parseConfig(confFile);
+        parseConfig(workDir, confFile);
     }
 
     public Map<String, NGSchema> getSchemas() {
@@ -74,7 +75,8 @@ public class Instances {
         return databases;
     }
 
-    private void parseConfig(final String confFile) throws
+    private void parseConfig(final String workDir,
+                             final String confFile) throws
                                                    ParserConfigurationException,
                                                    SAXException,
                                                    IOException {
@@ -82,24 +84,44 @@ public class Instances {
 
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         final DocumentBuilder db = dbf.newDocumentBuilder();
-        final File file = new File(confFile);
+        final String path = getPath(workDir, confFile);
+        final File file = new File(path);
         
         if (!file.exists()) {
             throw new IOException("missing DeDup configuration file:" + confFile);
         }
-        final Document doc = db.parse(new File(confFile));
-
+        final Document doc = db.parse(file);
         final Node configNode = doc.getFirstChild();
         if (! "config".equals(configNode.getNodeName())) {
             throw new IOException("missing 'config' node");
         }
 
-        parseSchemas(configNode);
-        parseIndexes(configNode);
+        parseSchemas(workDir, configNode);
+        parseIndexes(workDir, configNode);
         //parseDatabases(configNode);
     }
+    
+    private String getPath(final String workDir,
+                           final String path) {
+        assert path != null;
+        
+        final String tpath = path.trim();
+        final String ret;
+        
+        if (workDir == null) {
+            ret = tpath;
+        } else if (tpath.charAt(0) == '/') {
+            ret = tpath;
+        } else {
+            final String tworkDir = workDir.trim();
+            ret = tworkDir + (tworkDir.endsWith("/") ? "" : "/") + tpath;
+        }
+        
+        return ret;
+    }
 
-    final void parseSchemas(final Node config) throws
+    final void parseSchemas(final String workDir,
+                            final Node config) throws
                                                    ParserConfigurationException,
                                                    SAXException,
                                                    IOException {
@@ -110,14 +132,16 @@ public class Instances {
             if (schemas.containsKey(name)) {
                 throw new IOException("duplicated schema name:" + name);
             }
-            final NGSchema schema = new NGSchema(name,
-                                          getChildContent(schNode, "path"),
+            final String path = getPath(workDir, 
+                                        getChildContent(schNode, "path"));
+            final NGSchema schema = new NGSchema(name, path,
                                           getChildContent(schNode, "encoding"));
             schemas.put(name, schema);
         }
     }
 
-    final void parseIndexes(final Node config) throws
+    final void parseIndexes(final String workDir,
+                            final Node config) throws
                                                    ParserConfigurationException,
                                                    SAXException,
                                                    IOException {
@@ -128,13 +152,9 @@ public class Instances {
             if (indexes.containsKey(name)) {
                 throw new IOException("duplicated index name:" + name);
             }
-            final String schemaName = getChildContent(idxNode, "schema");
-            final NGSchema schema = schemas.get(schemaName);
-            if (schema == null) {
-                throw new IOException("missing index/schema element");
-            }
-            final String path = getChildContent(idxNode, "path");
-            final NGIndex index = new NGIndex(name, path, schema);
+            final String path = getPath(workDir, 
+                                        getChildContent(idxNode, "path"));
+            final NGIndex index = new NGIndex(name, path);
             indexes.put(name, index);
         }
     }
