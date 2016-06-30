@@ -47,7 +47,5 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(br.bireme.ddp.DeDup.class);
-        resources.add(br.bireme.ddp.GenericResource.class);
     }
-
 }

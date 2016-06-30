@@ -92,7 +92,9 @@ function reloadPage() {
     var dbValue = database.options[database.selectedIndex].value;    
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
-    var path = "/DeDup/services/?database=" + dbValue + "&schema=" + schValue;
+    var port = document.location.port;
+    var path = "http://localhost:" + port + "/DeDup/services/?database=" 
+                                              + dbValue + "&schema=" + schValue;
     
     window.location=path;
 }
@@ -102,7 +104,8 @@ function reloadPagePost() {
     var dbValue = database.options[database.selectedIndex].value;    
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
-    var path = "/DeDup/services/";
+    var port = document.location.port;
+    var path = "http://localhost:" + port + "/DeDup/services/";
     var form = document.createElement("form");
     var hiddenField1 = document.createElement("h1");
     var hiddenField2 = document.createElement("h2");
@@ -137,8 +140,9 @@ function putPage() {
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
     var id = "only_for_test";
-    var path = "/DeDup/services/put/"+ dbValue +"/" + schValue + "/" + id;
-    
+    var port = document.location.port;
+    var path = "http://localhost:" + port + "/DeDup/services/put/" + dbValue 
+                                                     +"/" + schValue + "/" + id;   
     var json = "{\"db\":\"" + dbValue + "\",\"schema\":\"" + schValue + "\"";
     var inputs = document.getElementsByTagName("*");
     for (var i = 0; i < inputs.length; i++) {
@@ -150,13 +154,13 @@ function putPage() {
         }
     }
     json += "}";
-    
     var xhr = new XMLHttpRequest();
     xhr.open('POST', path);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) { 
             //return xhr.responseText;
+            alert("Documento adicionado.");
             return "<html><h1>OK - inserted</h1></html>";
         } else {
             //alert(xhr.responseText);
@@ -175,7 +179,7 @@ function putPage() {
     <body style="background-color:#f7faff">
         <h1>DeDup Application</h1>
         
-        <form action="/DeDup/services/duplicates" method="post" >
+        <form action="http://localhost:<%=request.getLocalPort()%>/DeDup/services/duplicates" method="post" >
             Base de dados:
             <select name="database" id="db">
                 <% 
@@ -245,6 +249,7 @@ function putPage() {
                 schs += "]";
             %>   
             <!--button type="button" value="Armazenar" onclick="putPage(<%=schs%>)">Armazenar</button-->
+            <!--button type="button" value="Armazenar" onclick="putPage()">Armazenar</button-->
             <button type="button" value="Armazenar" onclick="putPage()">Armazenar</button>
             <input type="submit" value="Pesquisar">
             <br/>

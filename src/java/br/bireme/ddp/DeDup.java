@@ -228,10 +228,18 @@ public class DeDup {
                 json = "{\"ERROR\":\"invalid token value\"}";
             }
             // Check token here
-        } else {
+        } else {                        
             try {
-                final MultivaluedMap<String, String> queryParams =
+                final MultivaluedMap<String, String> queryParams0 =
                                                    uriInfo.getQueryParameters();
+                final MultivaluedMap<String, String> queryParams;
+                if (queryParams0.containsKey("id")) {
+                    queryParams = queryParams0;
+                } else {
+                    queryParams = 
+                           new MultivaluedHashMap<String, String>(queryParams0);
+                    queryParams.add("id", "?");
+                }
                 final Instances instances = getInstances();
                 final Map<String, NGIndex> indexes = instances.getIndexes();
                 final NGSchema nschema = instances.getSchemas().get(schema);
@@ -296,6 +304,13 @@ public class DeDup {
             }
             // Check token here
         } else {
+            final MultivaluedMap<String, String> formParams1;
+            if (formParams.containsKey("id")) {
+                formParams1 = formParams;
+            } else {
+                formParams1 = new MultivaluedHashMap<String, String>(formParams);
+                formParams1.add("id", "?");
+            }            
             try {
                 final Instances instances = getInstances();
                 final Map<String, NGIndex> indexes = instances.getIndexes();
@@ -305,8 +320,8 @@ public class DeDup {
                                        "invalid 'schema' parameter: " + schema);
                 }
                 final String expr = 
-                             getPipedExpression(instances, schema, formParams);
-                final String squant = formParams.getFirst("quantity");
+                             getPipedExpression(instances, schema, formParams1);
+                final String squant = formParams1.getFirst("quantity");
                 final MultivaluedMap<String,String> results =
                                     new MultivaluedHashMap<String,String>();
                 int quantity = (squant == null) ? 10 : Integer.parseInt(squant);
@@ -328,7 +343,7 @@ public class DeDup {
                     }
                 }
                 final List<String> grouped = groupResults(results, 0, 1, quantity);
-                json = showJsonResults(0, 1, nschema, formParams, grouped);
+                json = showJsonResults(0, 1, nschema, formParams1, grouped);
             } catch(Exception ex) {
                 String msg = ex.getMessage();
                 msg = (msg == null) ? "" : msg.replace('"', '\'');
