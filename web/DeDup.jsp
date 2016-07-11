@@ -9,6 +9,8 @@
 <%@page import="java.util.*,java.net.*,java.io.*,org.json.simple.* " %>
 
 <%!
+    
+    
     String readURL(final String url) throws MalformedURLException, IOException {
         final URL xurl = new URL(url);
         final BufferedReader in = new BufferedReader(
@@ -28,8 +30,10 @@
         final Set<String> schemas = new TreeSet<String>();
         
         try {           
-            final String json = readURL("http://localhost:" 
-                          + request.getLocalPort() + "/DeDup/services/schemas");
+            final String serverName = request.getServerName();
+            final int serverPort = request.getServerPort();
+            final String json = readURL("http://" + serverName + ":" + 
+                                        serverPort + "/DeDup/services/schemas");
             final JSONObject obj = (JSONObject)JSONValue.parse(json);
             final JSONArray array = (JSONArray)obj.get("schemas");
             for (Object obj2: array) {
@@ -47,9 +51,11 @@
     Set<String> getDatabases(final HttpServletRequest request) {
         final Set<String> databases = new TreeSet<String>();
         
-        try {           
-            final String json = readURL("http://localhost:" 
-                        + request.getLocalPort() + "/DeDup/services/indexes");
+        try {   
+            final String serverName = request.getServerName();
+            final int serverPort = request.getServerPort();
+            final String json = readURL("http://" + serverName + ":" + 
+                                        serverPort + "/DeDup/services/indexes");
             final JSONObject obj = (JSONObject)JSONValue.parse(json);
             final JSONArray array = (JSONArray)obj.get("indexes");
             for (Object obj2: array) {
@@ -68,8 +74,10 @@
         final Set<String> xschema = new TreeSet<String>();
         
         try {           
-            final String json = readURL("http://localhost:" 
-                + request.getLocalPort() + "/DeDup/services/schema/" + schema);
+            final String serverName = request.getServerName();
+            final int serverPort = request.getServerPort();
+            final String json = readURL("http://" + serverName + ":" + 
+                               serverPort + "/DeDup/services/schema/" + schema);
             final JSONObject obj = (JSONObject)JSONValue.parse(json);
             final JSONArray array = (JSONArray)obj.get("params");
             for (Object obj2: array) {
@@ -92,8 +100,8 @@ function reloadPage() {
     var dbValue = database.options[database.selectedIndex].value;    
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
-    var port = document.location.port;
-    var path = "http://localhost:" + port + "/DeDup/services/?database=" 
+    var host = document.location.host;
+    var path = "http://" + host + "/DeDup/services/?database=" 
                                               + dbValue + "&schema=" + schValue;
     
     window.location=path;
@@ -104,8 +112,8 @@ function reloadPagePost() {
     var dbValue = database.options[database.selectedIndex].value;    
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
-    var port = document.location.port;
-    var path = "http://localhost:" + port + "/DeDup/services/";
+    var host = document.location.host;
+    var path = "http://" + host + "/DeDup/services/";
     var form = document.createElement("form");
     var hiddenField1 = document.createElement("h1");
     var hiddenField2 = document.createElement("h2");
@@ -140,8 +148,8 @@ function putPage() {
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
     var id = "only_for_test";
-    var port = document.location.port;
-    var path = "http://localhost:" + port + "/DeDup/services/put/" + dbValue 
+    var host = document.location.host;
+    var path = "http://" + host + "/DeDup/services/put/" + dbValue 
                                                      +"/" + schValue + "/" + id;   
     var json = "{\"db\":\"" + dbValue + "\",\"schema\":\"" + schValue + "\"";
     var inputs = document.getElementsByTagName("*");
@@ -179,7 +187,7 @@ function putPage() {
     <body style="background-color:#f7faff">
         <h1>DeDup Application</h1>
         
-        <form action="http://localhost:<%=request.getLocalPort()%>/DeDup/services/duplicates" method="post" >
+        <form action="http://<%=request.getServerName()%>:<%=request.getLocalPort()%>/DeDup/services/duplicates" method="post" >
             Base de dados:
             <select name="database" id="db">
                 <% 
