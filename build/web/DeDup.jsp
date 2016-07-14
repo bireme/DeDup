@@ -9,7 +9,7 @@
 <%@page import="java.util.*,java.net.*,java.io.*,org.json.simple.* " %>
 
 <%!
-    
+    final static String SERVER_HOST = "dedup.bireme.org";
     
     String readURL(final String url) throws MalformedURLException, IOException {
         final URL xurl = new URL(url);
@@ -32,8 +32,11 @@
         try {           
             final String serverName = request.getServerName();
             final int serverPort = request.getServerPort();
-            final String json = readURL("http://" + serverName + ":" + 
-                                        serverPort + "/DeDup/services/schemas");
+            final String url = serverName.equals(SERVER_HOST) 
+                               ? "http://" + serverName +  "/services/schemas"
+                               : "http://" + serverName + ":" + serverPort + 
+                                                     "/DeDup/services/schemas";
+            final String json = readURL(url);
             final JSONObject obj = (JSONObject)JSONValue.parse(json);
             final JSONArray array = (JSONArray)obj.get("schemas");
             for (Object obj2: array) {
@@ -54,8 +57,12 @@
         try {   
             final String serverName = request.getServerName();
             final int serverPort = request.getServerPort();
-            final String json = readURL("http://" + serverName + ":" + 
-                                        serverPort + "/DeDup/services/indexes");
+            final String url = serverName.equals(SERVER_HOST) 
+                               ? "http://" + serverName + 
+                                                     "/services/indexes"
+                               : "http://" + serverName + ":" + serverPort + 
+                                               "/DeDup/services/indexes";
+            final String json = readURL(url);
             final JSONObject obj = (JSONObject)JSONValue.parse(json);
             final JSONArray array = (JSONArray)obj.get("indexes");
             for (Object obj2: array) {
@@ -76,8 +83,12 @@
         try {           
             final String serverName = request.getServerName();
             final int serverPort = request.getServerPort();
-            final String json = readURL("http://" + serverName + ":" + 
-                               serverPort + "/DeDup/services/schema/" + schema);
+            final String url = serverName.equals(SERVER_HOST) 
+                         ? "http://" + serverName +
+                                                   "/services/schema/" + schema
+                         : "http://" + serverName + ":" + serverPort + 
+                                             "/DeDup/services/schema/" + schema;
+            final String json = readURL(url);
             final JSONObject obj = (JSONObject)JSONValue.parse(json);
             final JSONArray array = (JSONArray)obj.get("params");
             for (Object obj2: array) {
@@ -101,9 +112,15 @@ function reloadPage() {
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
     var host = document.location.host;
-    var path = "http://" + host + "/DeDup/services/?database=" 
-                                              + dbValue + "&schema=" + schValue;
-    
+    var hostname = document.location.hostname;
+    var path0 = "";
+    if (hostname === "<%=SERVER_HOST%>") {
+        path0 = "/services/";
+    } else {
+        path0 = "/DeDup/services/";
+    }
+    var path = "http://" + host + path0 + "?database=" 
+                                              + dbValue + "&schema=" + schValue;    
     window.location=path;
 }
 
@@ -113,7 +130,14 @@ function reloadPagePost() {
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
     var host = document.location.host;
-    var path = "http://" + host + "/DeDup/services/";
+    var hostname = document.location.hostname;
+    var path0 = "";
+    if (hostname === "<%=SERVER_HOST%>") {
+        path0 = "/services/";
+    } else {
+        path0 = "/DeDup/services/";
+    }
+    var path = "http://" + host + path0;
     var form = document.createElement("form");
     var hiddenField1 = document.createElement("h1");
     var hiddenField2 = document.createElement("h2");
@@ -149,8 +173,15 @@ function putPage() {
     var schValue = schema.options[schema.selectedIndex].value;
     var id = "only_for_test";
     var host = document.location.host;
-    var path = "http://" + host + "/DeDup/services/put/" + dbValue 
-                                                     +"/" + schValue + "/" + id;   
+    var hostname = document.location.hostname;
+    var path0 = "";
+    if (hostname === "<%=SERVER_HOST%>") {
+        path0 = "/services/put/";
+    } else {
+        path0 = "/DeDup/services/put/";
+    }
+         
+    var path = "http://" + host + path0 + dbValue + "/" + schValue + "/" + id;   
     var json = "{\"db\":\"" + dbValue + "\",\"schema\":\"" + schValue + "\"";
     var inputs = document.getElementsByTagName("*");
     for (var i = 0; i < inputs.length; i++) {
@@ -187,7 +218,14 @@ function putPage() {
     <body style="background-color:#f7faff">
         <h1>DeDup Application</h1>
         
-        <form action="http://<%=request.getServerName()%>:<%=request.getLocalPort()%>/DeDup/services/duplicates" method="post" >
+        <%
+            final String serverName = request.getServerName();
+            final String port = Integer.toString(request.getLocalPort());
+            final String path = (serverName.equals("dedup.bireme.org"))
+                    ? ("http://" + serverName + ":" + port + "/services/duplicates")
+                    : ("http://" + serverName + ":" + port + "/DeDup/services/duplicates");
+        %>
+        <form action="<%=path%>" method="post" >
             Base de dados:
             <select name="database" id="db">
                 <% 
