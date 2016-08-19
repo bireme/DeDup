@@ -26,10 +26,8 @@ import br.bireme.ngrams.NGSchema;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,7 +45,7 @@ import org.xml.sax.SAXException;
 public class Instances {
     private final Map<String, NGSchema> schemas;
     private final Map<String, NGIndex> indexes;
-    private final Map<String, Set<NGIndex>> databases; 
+    //private final Map<String, Set<NGIndex>> databases; 
 
     public Instances(final String workDir,
                      final String confFile) throws ParserConfigurationException,
@@ -58,7 +56,7 @@ public class Instances {
         }
         schemas = new TreeMap<String, NGSchema>();
         indexes = new TreeMap<String, NGIndex>();
-        databases = new TreeMap<String, Set<NGIndex>>();
+        //databases = new TreeMap<String, Set<NGIndex>>();
 
         parseConfig(workDir, confFile);
     }
@@ -71,9 +69,9 @@ public class Instances {
         return indexes;
     }
     
-    public Map<String, Set<NGIndex>> getDatabases() {
+    /*public Map<String, Set<NGIndex>> getDatabases() {
         return databases;
-    }
+    }*/
 
     private void parseConfig(final String workDir,
                              final String confFile) throws
@@ -120,8 +118,8 @@ public class Instances {
         return ret;
     }
 
-    final void parseSchemas(final String workDir,
-                            final Node config) throws
+    private void parseSchemas(final String workDir,
+                              final Node config) throws
                                                    ParserConfigurationException,
                                                    SAXException,
                                                    IOException {
@@ -140,8 +138,8 @@ public class Instances {
         }
     }
 
-    final void parseIndexes(final String workDir,
-                            final Node config) throws
+    private void parseIndexes(final String workDir,
+                              final Node config) throws
                                                    ParserConfigurationException,
                                                    SAXException,
                                                    IOException {
@@ -154,11 +152,12 @@ public class Instances {
             }
             final String path = getPath(workDir, 
                                         getChildContent(idxNode, "path"));
-            final NGIndex index = new NGIndex(name, path);
+            final NGIndex index = new NGIndex(name, path, false);
             indexes.put(name, index);
         }
     }
     
+    /*
     final void parseDatabases(final Node config) throws
                                                    ParserConfigurationException,
                                                    SAXException,
@@ -185,6 +184,7 @@ public class Instances {
             }
         }
     }
+    */
 
     private List<Node> getNodes(final Node root,
                                 final String nname) {
