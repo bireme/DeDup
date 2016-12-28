@@ -86,7 +86,7 @@ public class Instances {
         final File file = new File(path);
         
         if (!file.exists()) {
-            throw new IOException("missing DeDup configuration file:" + confFile);
+            throw new IOException("missing DeDup configuration file:" + path);
         }
         final Document doc = db.parse(file);
         final Node configNode = doc.getFirstChild();

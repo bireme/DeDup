@@ -125,14 +125,14 @@ public class DeDup {
             final NGSchema nschema = instances.getSchemas().get(schema);
             if (nschema == null) {
                 json = "{\"ERROR\":\"Schema not found: " + schema + "\"}";
-            } else {                
+            } else {
                 json = nschema.getSchemaJson();
             }
         } catch(Exception ex) {
             String msg = ex.getMessage();
             msg = (msg == null) ? "" : msg.replace('"', '\'');
             json = "{\"ERROR\":\"" + msg + "\"}";
-        }       
+        }
         return json;
     }
 
@@ -146,7 +146,7 @@ public class DeDup {
             instances = getInstances();
             final StringBuilder builder = new StringBuilder("{\"schemas\":[");
             boolean first = true;
-            
+
             for (String schema : instances.getSchemas().keySet()) {
                 if (first) {
                     first = false;
@@ -166,7 +166,7 @@ public class DeDup {
         }
         return json;
     }
-    
+
     @GET
     @Produces("application/json") @Path("/indexes")
     public String showIndexes() {
@@ -177,7 +177,7 @@ public class DeDup {
             instances = getInstances();
             final StringBuilder builder = new StringBuilder("{\"indexes\":[");
             boolean first = true;
-            
+
             for (Map.Entry<String, NGIndex> entry: instances.getIndexes()
                                                                   .entrySet()) {
                 if (first) {
@@ -198,7 +198,7 @@ public class DeDup {
         }
         return json;
     }
-        
+
     /**
      * * http://localhost:8084/DeDup/get/duplicates/?database=lilacs&database=medline
      * @param servletResponse
@@ -218,17 +218,17 @@ public class DeDup {
         String json;
 
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        
+
         if ((indexList == null) || indexList.isEmpty()) {
             json = "{\"ERROR\":\"missing 'database' parameter\"}";
         } else if ((schema == null) || schema.isEmpty()) {
-            json = "{\"ERROR\":\"missing 'schema' parameter\"}";   
+            json = "{\"ERROR\":\"missing 'schema' parameter\"}";
         } else if (PROCESS_TOKEN) {
             if ((token == null) || token.isEmpty()) {
                 json = "{\"ERROR\":\"invalid token value\"}";
             }
             // Check token here
-        } else {                        
+        } else {
             try {
                 final MultivaluedMap<String, String> queryParams0 =
                                                    uriInfo.getQueryParameters();
@@ -236,7 +236,7 @@ public class DeDup {
                 if (queryParams0.containsKey("id")) {
                     queryParams = queryParams0;
                 } else {
-                    queryParams = 
+                    queryParams =
                            new MultivaluedHashMap<String, String>(queryParams0);
                     queryParams.add("id", "?");
                 }
@@ -247,7 +247,7 @@ public class DeDup {
                     throw new IllegalArgumentException(
                                        "invalid 'schema' parameter: " + schema);
                 }
-                final String expr = 
+                final String expr =
                              getPipedExpression(instances, schema, queryParams);
                 final String squant = queryParams.getFirst("quantity");
                 final MultivaluedMap<String,String> results =
@@ -263,7 +263,7 @@ public class DeDup {
                             throw new IllegalArgumentException(
                                     "invalid 'index' parameter: " + idx);
                         }
-                        final Set<String> srcRes = 
+                        final Set<String> srcRes =
                                      NGrams.search(index, nschema, expr, true);
                         for (String res : srcRes) {
                             results.add(idx, res);
@@ -288,16 +288,16 @@ public class DeDup {
     public String duplicatesPost(@Context HttpServletResponse servletResponse,
                                  @FormParam("database") final List<String> indexList,
                                  @FormParam("schema") final String schema,
-                                 @FormParam("token") final String token,                                 
-                                 MultivaluedMap<String, String> formParams) {         
+                                 @FormParam("token") final String token,
+                                 MultivaluedMap<String, String> formParams) {
         String json;
-        
+
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-                
+
         if ((indexList == null) || indexList.isEmpty()) {
             json = "{\"ERROR\":\"missing 'database' parameter\"}";
         } else if ((schema == null) || schema.isEmpty()) {
-            json = "{\"ERROR\":\"missing 'schema' parameter\"}";    
+            json = "{\"ERROR\":\"missing 'schema' parameter\"}";
         } else if (PROCESS_TOKEN) {
             if ((token == null) || token.isEmpty()) {
                 json = "{\"ERROR\":\"invalid token value\"}";
@@ -310,7 +310,7 @@ public class DeDup {
             } else {
                 formParams1 = new MultivaluedHashMap<String, String>(formParams);
                 formParams1.add("id", "?");
-            }            
+            }
             try {
                 final Instances instances = getInstances();
                 final Map<String, NGIndex> indexes = instances.getIndexes();
@@ -319,7 +319,7 @@ public class DeDup {
                     throw new IllegalArgumentException(
                                        "invalid 'schema' parameter: " + schema);
                 }
-                final String expr = 
+                final String expr =
                              getPipedExpression(instances, schema, formParams1);
                 final String squant = formParams1.getFirst("quantity");
                 final MultivaluedMap<String,String> results =
@@ -335,7 +335,7 @@ public class DeDup {
                             throw new IllegalArgumentException(
                                     "invalid 'index' parameter: " + idx);
                         }
-                        final Set<String> srcRes = 
+                        final Set<String> srcRes =
                                      NGrams.search(index, nschema, expr, true);
                         for (String res : srcRes) {
                             results.add(idx, res);
@@ -352,7 +352,7 @@ public class DeDup {
         }
         return json;
     }
-    
+
     @POST
     @Path("/put/{database}/{schema}/{id}")
     @Consumes("application/json;charset=utf-8")
@@ -360,20 +360,20 @@ public class DeDup {
     public String putDocument(@Context HttpServletResponse servletResponse,
                               @PathParam("database") final List<String> indexList,
                               @PathParam("schema") String schema,
-                              @PathParam("id") String id,                              
+                              @PathParam("id") String id,
                               //final String jsonDocument,
-                              //final String token) {                 
+                              //final String token) {
                               //MyJaxBean bean) {
                               final String jsonDocument) {
-        
+
         String json;
-        
+
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        
+
         if ((indexList == null) || (indexList.isEmpty())) {
             json = "{\"ERROR\":\"missing 'database' parameter\"}";
         } else if ((schema == null) || schema.isEmpty()) {
-            json = "{\"ERROR\":\"missing 'schema' parameter\"}"; 
+            json = "{\"ERROR\":\"missing 'schema' parameter\"}";
         } else {
             IndexWriter writer = null;
             try {
@@ -384,25 +384,25 @@ public class DeDup {
                     throw new IllegalArgumentException(
                                        "invalid 'schema' parameter: " + schema);
                 }
-                final String jdoc = jsonDocument.replaceAll("&nbsp;", " ");                
+                final String jdoc = jsonDocument.replaceAll("&nbsp;", " ");
                 json = "{\"indexes\":[";
                 for (String idxName : indexList) {
                     final String[] split = idxName.split(" *" + OCC_SEP + " *");
-                    boolean first = true;                    
+                    boolean first = true;
                     for (String idx : split) {
                         final NGIndex index = indexes.get(idx);
                         if (index == null) {
                             throw new IllegalArgumentException(
                                     "invalid 'index' parameter: " + idx);
                         }
-                        final String pipedDoc = NGrams.json2pipe(nschema, 
+                        final String pipedDoc = NGrams.json2pipe(nschema,
                                                      index.getName(), id, jdoc);
-                        writer = index.getIndexWriter();
-                        if (NGrams.indexDocument(index, writer, nschema, 
+                        writer = index.getIndexWriter(true);
+                        if (NGrams.indexDocument(index, writer, nschema,
                                                                     pipedDoc)) {
                             if (first) first = false; else json += ",";
                             json += "\"" + index.getName() + "\"";
-                        }                        
+                        }
                     }
                 }
                 json += "]}";
@@ -415,14 +415,173 @@ public class DeDup {
                     try {
                         writer.close();
                     } catch(Exception ex) {
-                    }                    
+                    }
                 }
-            }   
+            }
         }
-        
-        return json;        
+
+        return json;
     }
-    
+
+    @POST
+    @Path("/raw/duplicates/{database}/{schema}")
+    @Consumes("text/plain;charset=utf-8")
+    @Produces("text/plain;charset=utf-8")
+    public String duplicatesPostRaw(@Context HttpServletResponse servletResponse,
+                            @PathParam("database") final List<String> indexList,
+                            @PathParam("schema") final String schema,
+                            //final String token,
+                            final String strDocuments) { // piped docs separated by \n
+        String ret = "";
+
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+
+        if ((indexList == null) || indexList.isEmpty()) {
+            ret = "ERROR: missing 'database' parameter";
+        } else if ((schema == null) || schema.isEmpty()) {
+            ret = "ERROR: missing 'schema' parameter";
+        /*} else if (PROCESS_TOKEN) {
+            if ((token == null) || token.isEmpty()) {
+                json = "{\"ERROR\":\"invalid token value\"}";
+            }
+            // Check token here*/
+        } else {
+            try {
+                final Instances instances = getInstances();
+                final Map<String, NGIndex> indexes = instances.getIndexes();
+                final NGSchema nschema = instances.getSchemas().get(schema);
+                if (nschema == null) {
+                    throw new IllegalArgumentException(
+                                       "invalid 'schema' parameter: " + schema);
+                }
+                final int dbPos = nschema.getNamesPos().get("database");
+                final String doc1 = strDocuments.trim().replaceAll("&nbsp;", " ");
+                final String[] docs = doc1.split(" *\n *");
+
+                for (String doc: docs) {
+                    final String[] elems = doc.split("\\|", Integer.MAX_VALUE);
+
+                    for (String idxName : indexList) {
+                       final String[] split = idxName.split(" *" + OCC_SEP + " *");
+
+                        for (String idx : split) {
+                            final NGIndex index = indexes.get(idx);
+                            if (index == null) {
+                                throw new IllegalArgumentException(
+                                    "invalid 'index' parameter: " + idx);
+                            }
+                            String pipedDoc = "";
+                            int pos = 0;
+
+                            for (String elem: elems) {
+                              if (pos != 0) pipedDoc += "|";
+                              if (pos == dbPos) {
+                                  pipedDoc += idx;
+                              } else {
+                                  pipedDoc += elem;
+                              }
+                              pos += 1;
+                            }
+                            boolean first = true;
+                            final Set<String> srcRes =
+                                  NGrams.search(index, nschema, pipedDoc, true);
+                            for (String pipe: srcRes) {
+                                if (first) first = false; else ret += "\n";
+                                ret += pipe;
+                            }
+                        }
+                    }
+                }
+            } catch(Exception ex) {
+                String msg = ex.getMessage();
+                msg = (msg == null) ? "" : msg.replace('"', '\'');
+                ret = "ERROR: " + msg;
+            }
+        }
+        return ret;
+    }
+
+    @POST
+    @Path("/raw/put/{database}/{schema}")
+    @Consumes("text/plain;charset=utf-8")
+    @Produces("text/plain;charset=utf-8")
+    public String putDocumentRaw(@Context HttpServletResponse servletResponse,
+                            @PathParam("database") final List<String> indexList,
+                            @PathParam("schema") String schema,
+                            //final String token) {
+                            final String strDocuments) { // piped docs separated by \n
+
+        String ret = "OK";
+
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+
+        if ((indexList == null) || (indexList.isEmpty())) {
+            ret = "ERROR: missing 'database' parameter";
+        } else if ((schema == null) || schema.isEmpty()) {
+            ret = "ERROR: missing 'schema' parameter";
+        } else {
+            IndexWriter writer = null;
+            try {
+                final Instances instances = getInstances();
+                final Map<String, NGIndex> indexes = instances.getIndexes();
+                final NGSchema nschema = instances.getSchemas().get(schema);
+                if (nschema == null) {
+                    throw new IllegalArgumentException(
+                                       "invalid 'schema' parameter: " + schema);
+                }
+                final int dbPos = nschema.getNamesPos().get("databaseField");
+                final String doc1 = strDocuments.trim().replaceAll("&nbsp;", " ");
+                final String[] docs = doc1.split(" *\n *");
+
+                for (String doc: docs) {
+                    final String[] elems = doc.split("\\|", Integer.MAX_VALUE);
+
+                    for (String idxName : indexList) {
+                       final String[] split = idxName.split(" *" + OCC_SEP + " *");
+
+                        for (String idx : split) {
+                            final NGIndex index = indexes.get(idx);
+                            if (index == null) {
+                                throw new IllegalArgumentException(
+                                    "invalid 'index' parameter: " + idx);
+                            }
+                            String pipedDoc = "";
+                            int pos = 0;
+
+                            for (String elem: elems) {
+                              if (pos != 0) pipedDoc += "|";
+                              if (pos == dbPos) {
+                                  pipedDoc += idx;
+                              } else {
+                                  pipedDoc += elem;
+                              }
+                              pos += 1;
+                            }
+                            writer = index.getIndexWriter(true);
+                            if (!NGrams.indexDocument(index, writer, nschema,
+                                                                    pipedDoc)) {
+                                throw new IllegalArgumentException(
+                                                     "invalid document: " + doc);
+                            }
+                        }
+                    }
+                }
+            } catch(Exception ex) {
+                String msg = ex.getMessage();
+                msg = (msg == null) ? "" : msg.replace('"', '\'');
+                ret = "ERROR: " + msg;
+            } finally {
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch(Exception ex) {
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
     @POST
     @Path("/putXXX/{database}/{schema}/{id}")
     @Consumes("application/json")
@@ -432,20 +591,20 @@ public class DeDup {
                                  @PathParam("schema") String schema,
                                  @PathParam("id") String id,
                                  final String json) {
-        
+
         return json;
     }
 
     @POST
     @Path("/xxx")
     @Consumes("application/json; charset=utf-8")
-    @Produces("application/json; charset=utf-8")     
+    @Produces("application/json; charset=utf-8")
     public String xxx(@Context HttpServletResponse servletResponse,
                       final String json) {
-                     
+
         return json;
     }
-    
+
     private String getPipedExpression(final Instances instances,
                                       final String schema,
                              final MultivaluedMap<String, String> queryParams) {
@@ -461,12 +620,12 @@ public class DeDup {
         if (!queryParams.containsKey(indexedFldName)) {
             throw new IllegalArgumentException("'" + indexedFldName
                                                     + "' parameter is missing");
-        }        
+        }
         final StringBuilder builder = new StringBuilder();
         final Map<String,Integer> namesPos = nschema.getNamesPos();
         final TreeMap<Integer,String> posNames = (TreeMap<Integer,String>)
                                                          nschema.getPosNames();
-        final String[] array = new String[posNames.lastKey() + 1];               
+        final String[] array = new String[posNames.lastKey() + 1];
 
         for (Map.Entry<String,List<String>> entry : queryParams.entrySet()) {
             final String key = entry.getKey();
@@ -476,8 +635,8 @@ public class DeDup {
             //if (key.equals("id") || key.equals(indexedFldName)) {
             //    array[namesPos.get(key)] = value.get(0);
             //} else {}
-                
-            if ((!key.equals(TOKEN)) && (!key.equals(QUANTITY) && 
+
+            if ((!key.equals(TOKEN)) && (!key.equals(QUANTITY) &&
                                                        (!key.equals(SCHEMA)))) {
                 if (!namesPos.containsKey(key)) {
                     throw new IllegalArgumentException("'" + key + "' parameter"
@@ -514,7 +673,7 @@ public class DeDup {
         }
         return builder.toString();
     }
-   
+
     private List<String> groupResults(final MultivaluedMap<String,String> results,
                                       final int scorePos,
                                       final int similarityPos,
@@ -529,15 +688,15 @@ public class DeDup {
 
         for (Map.Entry<String,List<String>> entry : results.entrySet()) {
             final String key = entry.getKey();
-            final List<String> values = entry.getValue();            
+            final List<String> values = entry.getValue();
 
             for (String val : values) {
-                final String[] split = val.split("\\|");
+                final String[] split = val.split("\\|", Integer.MAX_VALUE);
                 if (split.length <= similarityPos) {
                     throw new IllegalArgumentException("bad result:" + val);
                 }
                 tree.put(Float.parseFloat(split[similarityPos]) + "_" +
-                         Float.parseFloat(split[scorePos]) + "_" + key + 
+                         Float.parseFloat(split[scorePos]) + "_" + key +
                         "_" + tree.size(), val);
             }
         }
@@ -639,8 +798,8 @@ public class DeDup {
                 builder.append(",");
             }
 
-            final String[] split = res.split("\\|");
-            final int idx = ((split.length - 2) / 2) + 2;            
+            final String[] split = res.split("\\|", Integer.MAX_VALUE);
+            final int idx = ((split.length - 2) / 2) + 2;
             final Map<String,Integer> namesPos = schema.getNamesPos();
 
             builder.append("{").append("\"score\":\"")
