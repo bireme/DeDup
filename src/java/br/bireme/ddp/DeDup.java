@@ -433,6 +433,7 @@ public class DeDup {
                             //final String token,
                             final String strDocuments) { // piped docs separated by \n
         String ret = "";
+        boolean first = true;
 
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
@@ -481,10 +482,9 @@ public class DeDup {
                                   pipedDoc += elem;
                               }
                               pos += 1;
-                            }
-                            boolean first = true;
+                            }                            
                             final Set<String> srcRes =
-                                  NGrams.search(index, nschema, pipedDoc, true);
+                                  NGrams.search(index, nschema, pipedDoc, false);
                             for (String pipe: srcRes) {
                                 if (first) first = false; else ret += "\n";
                                 ret += pipe;
