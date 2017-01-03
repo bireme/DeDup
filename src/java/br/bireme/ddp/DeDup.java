@@ -581,6 +581,60 @@ public class DeDup {
         }
         return ret;
     }
+    
+    /**
+     * * http://localhost:8084/DeDup/optmize/lilacs
+     * @param servletResponse
+     * @param index
+     * @param token
+     * @return
+     */
+    @GET
+    @Path("/optimize/{database}")
+    @Produces("text/plain;charset=utf-8")
+    public String optimizeIndexRaw(@Context HttpServletResponse servletResponse,
+                                   @PathParam("database") final String index,
+                                   @QueryParam("token") final String token) {
+        String ret;
+
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+
+        if (index == null) {
+            ret = "ERROR: missing 'database' parameter";        
+        } else if (PROCESS_TOKEN) {
+            if ((token == null) || token.isEmpty()) {
+                ret = "ERROR: invalid token value";
+            }
+            // Check token here
+        }
+        IndexWriter writer = null;
+        try {
+            final Instances instances = getInstances();
+            final Map<String, NGIndex> indexes = instances.getIndexes();
+            final NGIndex idx = indexes.get(index);
+
+            if (idx == null) {
+                throw new IllegalArgumentException(
+                                     "invalid 'index' parameter: " + index);
+            }
+            writer = idx.getIndexWriter(true);
+            writer.forceMerge(1); // optimize index
+            ret = "OK";
+        } catch(Exception ex) {
+            String msg = ex.getMessage();
+            msg = (msg == null) ? "" : msg.replace('"', '\'');
+            ret = "ERROR: " + msg;
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch(Exception ex) {
+                }
+            }
+        }
+            
+        return ret;    
+    }
 
     @POST
     @Path("/putXXX/{database}/{schema}/{id}")
