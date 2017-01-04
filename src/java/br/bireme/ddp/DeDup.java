@@ -424,30 +424,33 @@ public class DeDup {
     }
     
     @POST
-    @Path("/putDocs/{schema}")
+    @Path("/putDocs/{database}/{schema}")
     @Consumes("text/plain;charset=utf-8")
     @Produces("text/plain;charset=utf-8")
     public String putDocumentsRaw(@Context HttpServletResponse servletResponse,
+                                  @PathParam("database") String database,
                                   @PathParam("schema") String schema,
                                    final String multiLinePipedDocs) {
         String ret;
 
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
-        if ((schema == null) || schema.isEmpty()) {
+        if ((database == null) || database.isEmpty()) {
+            ret = "ERROR: missing 'database' parameter";
+        } else if ((schema == null) || schema.isEmpty()) {
             ret = "ERROR: missing 'schema' parameter";
         } else if ((multiLinePipedDocs == null) || (multiLinePipedDocs.isEmpty())) {
             ret = "ERROR: missing 'multiLinePipedDocs' parameter";
         } else {
             try {
                 final Instances instances = getInstances();
-                final Map<String, NGIndex> indexes = instances.getIndexes();                
+                final NGIndex index = instances.getIndexes().get(database);                
                 final NGSchema nschema = instances.getSchemas().get(schema);
                 if (nschema == null) {
                     throw new IllegalArgumentException(
                                        "invalid 'schema' parameter: " + schema);
                 }
-                NGrams.indexDocuments(nschema, indexes, multiLinePipedDocs);
+                NGrams.indexDocuments(nschema, index, multiLinePipedDocs);
                 ret = "OK";
             } catch(Exception ex) {
                 String msg = ex.getMessage();
