@@ -422,6 +422,41 @@ public class DeDup {
 
         return json;
     }
+    
+    @POST
+    @Path("/putDocs/{schema}")
+    @Consumes("text/plain;charset=utf-8")
+    @Produces("text/plain;charset=utf-8")
+    public String putDocumentsRaw(@Context HttpServletResponse servletResponse,
+                                  @PathParam("schema") String schema,
+                                   final String multiLinePipedDocs) {
+        String ret;
+
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+
+        if ((schema == null) || schema.isEmpty()) {
+            ret = "ERROR: missing 'schema' parameter";
+        } else if ((multiLinePipedDocs == null) || (multiLinePipedDocs.isEmpty())) {
+            ret = "ERROR: missing 'multiLinePipedDocs' parameter";
+        } else {
+            try {
+                final Instances instances = getInstances();
+                final Map<String, NGIndex> indexes = instances.getIndexes();                
+                final NGSchema nschema = instances.getSchemas().get(schema);
+                if (nschema == null) {
+                    throw new IllegalArgumentException(
+                                       "invalid 'schema' parameter: " + schema);
+                }
+                NGrams.indexDocuments(nschema, indexes, multiLinePipedDocs);
+                ret = "OK";
+            } catch(Exception ex) {
+                String msg = ex.getMessage();
+                msg = (msg == null) ? "" : msg.replace('"', '\'');
+                ret = "ERROR: " + msg;
+            }
+        }
+        return ret;
+    }
 
     @POST
     @Path("/raw/duplicates/{database}/{schema}")
