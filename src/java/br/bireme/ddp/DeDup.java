@@ -102,7 +102,7 @@ public class DeDup {
      * @throws java.io.IOException
      */
     @GET
-    @Produces("application/json") @Path("")
+    @Produces("application/json;charset=utf-8") @Path("")
     public void DeDupApp(@Context final HttpServletRequest request,
                          @Context final HttpServletResponse response)
                                           throws ServletException, IOException {
@@ -115,7 +115,7 @@ public class DeDup {
     }
 
     @GET
-    @Produces("application/json") @Path("/schema/{schema}")
+    @Produces("application/json;charset=utf-8") @Path("/schema/{schema}")
     public String showSchema(@PathParam("schema") String schema) {
         final Instances instances;
         String json;
@@ -137,7 +137,29 @@ public class DeDup {
     }
 
     @GET
-    @Produces("application/json") @Path("/schemas")
+    @Produces("application/xml;charset=utf-8") @Path("/schema/xml/{schema}")
+    public String showSchemaXml(@PathParam("schema") String schema) {
+        final Instances instances;
+        String xml;
+
+        try {
+            instances = getInstances();
+            final NGSchema nschema = instances.getSchemas().get(schema);
+            if (nschema == null) {
+                xml = "<ERROR>Schema not found: " + schema + "</ERROR>";
+            } else {
+                xml = nschema.getSchemaXml();
+            }
+        } catch(Exception ex) {
+            String msg = ex.getMessage();
+            msg = (msg == null) ? "" : msg.replace('"', '\'');
+            xml = "<ERROR>" + msg + "</ERROR>";
+        }
+        return xml;
+    }
+
+    @GET
+    @Produces("application/json;charset=utf-8") @Path("/schemas")
     public String showSchemas() {
         final Instances instances;
         String json;
@@ -168,7 +190,7 @@ public class DeDup {
     }
 
     @GET
-    @Produces("application/json") @Path("/indexes")
+    @Produces("application/json;charset=utf-8") @Path("/indexes")
     public String showIndexes() {
         final Instances instances;
         String json;
@@ -209,7 +231,7 @@ public class DeDup {
      * @return
      */
     @GET
-    @Produces("application/json") @Path("/get/duplicates")
+    @Produces("application/json;charset=utf-8") @Path("/get/duplicates")
     public String duplicatesGet(@Context HttpServletResponse servletResponse,
                               @Context final UriInfo uriInfo,
                               @QueryParam("database") final List<String> indexList,
@@ -284,7 +306,7 @@ public class DeDup {
     @POST
     @Path("/duplicates")
     @Consumes("application/x-www-form-urlencoded")
-    @Produces("application/json")
+    @Produces("application/json;charset=utf-8")
     public String duplicatesPost(@Context HttpServletResponse servletResponse,
                                  @FormParam("database") final List<String> indexList,
                                  @FormParam("schema") final String schema,
@@ -677,7 +699,7 @@ public class DeDup {
     @POST
     @Path("/putXXX/{database}/{schema}/{id}")
     @Consumes("application/json")
-    @Produces("application/json")
+    @Produces("application/json;charset=utf-8")
     public String putDocumentXXX(@Context HttpServletResponse servletResponse,
                                  @PathParam("database") final List<String> indexList,
                                  @PathParam("schema") String schema,
