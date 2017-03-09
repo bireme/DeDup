@@ -515,7 +515,6 @@ public class DeDup {
                     throw new IllegalArgumentException(
                                        "invalid 'schema' parameter: " + schema);
                 }
-                final int dbPos = nschema.getNamesPos().get("database");
                 final String doc1 = strDocuments.trim().replaceAll("&nbsp;", " ");
                 final String[] docs = doc1.split(" *\n *");
 
@@ -531,20 +530,8 @@ public class DeDup {
                                 throw new IllegalArgumentException(
                                     "invalid 'index' parameter: " + idx);
                             }
-                            String pipedDoc = "";
-                            int pos = 0;
-
-                            for (String elem: elems) {
-                              if (pos != 0) pipedDoc += "|";
-                              if (pos == dbPos) {
-                                  pipedDoc += idx;
-                              } else {
-                                  pipedDoc += elem;
-                              }
-                              pos += 1;
-                            }                            
                             final Set<String> srcRes =
-                                  NGrams.search(index, nschema, pipedDoc, false);
+                                      NGrams.search(index, nschema, doc, false);
                             for (String pipe: srcRes) {
                                 if (first) first = false; else ret += "\n";
                                 ret += pipe;
