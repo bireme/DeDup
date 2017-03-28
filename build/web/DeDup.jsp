@@ -175,16 +175,16 @@ function putPage() {
     var schValue = schema.options[schema.selectedIndex].value;
     var id = "only_for_test";
     var host = "";
+    var port = document.location.port;
     var hostname = document.location.hostname;
     var path0 = "";
     if (hostname === "<%=SERVER_HOST%>") {
         host = hostname;
         path0 = "/services/put/";
     } else {
-        document.location.host;
+        host = document.location.host;
         path0 = "/DeDup/services/put/";
     }
-         
     var path = "http://" + host + path0 + dbValue + "/" + schValue + "/" + id;   
     var json = "{\"db\":\"" + dbValue + "\",\"schema\":\"" + schValue + "\"";
     var inputs = document.getElementsByTagName("*");
@@ -199,14 +199,17 @@ function putPage() {
     json += "}";
     var xhr = new XMLHttpRequest();
     xhr.open('POST', path);
+    //alert("path:" + path + " json:[" + json + "]");
     xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) { 
-            //return xhr.responseText;
-            alert("Documento adicionado.");
+            //alert("Documento adicionado.");
             return "<html><h1>OK - inserted</h1></html>";
         } else {
-            //alert(xhr.responseText);
+            alert("readyState:" + xhr.readyState + " status:" + xhr.status + 
+                                        " response:[" + xhr.responseText + "]");
+            return "<html><h1>ERROR - "  + xhr.readyState + " status:" + 
+                    xhr.status + " response:[" + xhr.responseText + "]";
         }
     };
     xhr.send(json);
