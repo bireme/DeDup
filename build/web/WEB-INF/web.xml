@@ -4,13 +4,13 @@
     <context-param>
         <description>DeDup work directory</description>
         <param-name>DEDUP_WORK_DIR</param-name>
-        <!--param-value>/home/javaapps/DeDup</param-value-->
-        <param-value>/home/heitor/Projetos/DeDup </param-value>
+        <param-value>/home/javaapps/DeDup</param-value>
+        <!--param-value>/home/heitor/Projetos/DeDup </param-value-->
     </context-param>
     <context-param>
         <description>DeDup configuration file</description>
         <param-name>DEDUP_CONF_FILE</param-name>
-        <param-value>config_LILACS_Sas.cfg</param-value>
+        <param-value>config_LILACS.cfg</param-value>
     </context-param>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
