@@ -664,8 +664,7 @@ public class DeDup {
                 throw new IllegalArgumentException(
                                      "invalid 'index' parameter: " + index);
             }
-            writer = idx.getIndexWriter(true);
-            writer.forceMerge(1); // optimize index
+            writer = idx.getIndexWriter(false);
             ret = "OK";
         } catch(Exception ex) {
             String msg = ex.getMessage();
