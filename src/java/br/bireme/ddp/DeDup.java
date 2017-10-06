@@ -495,6 +495,11 @@ public class DeDup {
         String ret = "";
         boolean first = true;
 
+for (int idx = 0; idx < strDocuments.length(); idx++) {
+    char ch = strDocuments.charAt(idx);
+    System.out.print("(" + ch + "," + (int)ch + ")");
+}
+
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         if ((indexList == null) || indexList.isEmpty()) {
