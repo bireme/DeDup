@@ -545,6 +545,13 @@ public class DeDup {
                 ret = "ERROR: " + msg;
             }
         }
+        
+for (int idx = 0; idx < ret.length(); idx++) {
+    char ch = ret.charAt(idx);
+    System.out.print("(" + ch + "," + (int)ch + ")");
+}
+System.out.println();
+        
         return ret;
     }
 
