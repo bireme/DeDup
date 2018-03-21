@@ -132,7 +132,12 @@ public class DeDup {
             }
         } catch(Exception ex) {
             String msg = ex.getMessage();
-            msg = (msg == null) ? "" : msg.replace('"', '\'');
+            if (msg == null) {
+                final StringWriter sw = new StringWriter();
+                ex.printStackTrace(new PrintWriter(sw));
+                msg = sw.toString();
+            }
+            msg = msg.replace('"', '\'');
             json = "{\"ERROR\":\"" + msg + "\"}";
         }
         return json;
@@ -154,7 +159,12 @@ public class DeDup {
             }
         } catch(Exception ex) {
             String msg = ex.getMessage();
-            msg = (msg == null) ? "" : msg.replace('"', '\'');
+            if (msg == null) {
+                final StringWriter sw = new StringWriter();
+                ex.printStackTrace(new PrintWriter(sw));
+                msg = sw.toString();
+            }
+            msg = msg.replace('"', '\'');
             xml = "<ERROR>" + msg + "</ERROR>";
         }
         return xml;
@@ -185,7 +195,12 @@ public class DeDup {
             json = builder.toString();
         } catch(Exception ex) {
             String msg = ex.getMessage();
-            msg = (msg == null) ? "" : msg.replace('"', '\'');
+            if (msg == null) {
+                final StringWriter sw = new StringWriter();
+                ex.printStackTrace(new PrintWriter(sw));
+                msg = sw.toString();
+            }
+            msg = msg.replace('"', '\'');
             json = "{\"ERROR\":\"" + msg + "\"}";
         }
         return json;
@@ -217,7 +232,12 @@ public class DeDup {
             json = builder.toString();
         } catch(Exception ex) {
             String msg = ex.getMessage();
-            msg = (msg == null) ? "" : msg.replace('"', '\'');
+            if (msg == null) {
+                final StringWriter sw = new StringWriter();
+                ex.printStackTrace(new PrintWriter(sw));
+                msg = sw.toString();
+            }
+            msg = msg.replace('"', '\'');
             json = "{\"ERROR\":\"" + msg + "\"}";
         }
         return json;
@@ -298,7 +318,12 @@ public class DeDup {
                 json = showJsonResults(0, 1, nschema, queryParams, grouped);
             } catch(Exception ex) {
                 String msg = ex.getMessage();
-                msg = (msg == null) ? "" : msg.replace('"', '\'');
+                if (msg == null) {
+                    final StringWriter sw = new StringWriter();
+                    ex.printStackTrace(new PrintWriter(sw));
+                    msg = sw.toString();
+                }
+                msg = msg.replace('"', '\'');
                 json = "{\"ERROR\":\"" + msg + "\"}";
             }
         }
@@ -370,7 +395,12 @@ public class DeDup {
                 json = showJsonResults(0, 1, nschema, formParams1, grouped);
             } catch(Exception ex) {
                 String msg = ex.getMessage();
-                msg = (msg == null) ? "" : msg.replace('"', '\'');
+                if (msg == null) {
+                    final StringWriter sw = new StringWriter();
+                    ex.printStackTrace(new PrintWriter(sw));
+                    msg = sw.toString();
+                }
+                msg = msg.replace('"', '\'');
                 json = "{\"ERROR\":\"" + msg + "\"}";
             }
         }
@@ -432,7 +462,12 @@ public class DeDup {
                 json += "]}";
             } catch(Exception ex) {
                 String msg = ex.getMessage();
-                msg = (msg == null) ? "" : msg.replace('"', '\'');
+                if (msg == null) {
+                    final StringWriter sw = new StringWriter();
+                    ex.printStackTrace(new PrintWriter(sw));
+                    msg = sw.toString();
+                }
+                msg = msg.replace('"', '\'');
                 json = "{\"ERROR\":\"" + msg + "\"}";
             } finally {
                 if (writer != null) {
@@ -478,8 +513,13 @@ public class DeDup {
                 ret = "OK";
             } catch(Exception ex) {
                 String msg = ex.getMessage();
-                msg = (msg == null) ? "" : msg.replace('"', '\'');
-                ret = "ERROR: " + msg;
+                if (msg == null) {
+                    final StringWriter sw = new StringWriter();
+                    ex.printStackTrace(new PrintWriter(sw));
+                    msg = sw.toString();
+                }
+                msg = msg.replace('"', '\'');
+                ret = "ERROR: " + msg;                
             }
         }
         return ret;
@@ -623,8 +663,13 @@ public class DeDup {
                 }
             } catch(Exception ex) {
                 String msg = ex.getMessage();
-                msg = (msg == null) ? "" : msg.replace('"', '\'');
-                ret = "ERROR: " + msg;
+                if (msg == null) {
+                    final StringWriter sw = new StringWriter();
+                    ex.printStackTrace(new PrintWriter(sw));
+                    msg = sw.toString();
+                }
+                msg = msg.replace('"', '\'');
+                ret = "ERROR: " + msg;                
             } finally {
                 if (writer != null) {
                     try {
@@ -676,8 +721,13 @@ public class DeDup {
             ret = "OK";
         } catch(Exception ex) {
             String msg = ex.getMessage();
-            msg = (msg == null) ? "" : msg.replace('"', '\'');
-            ret = "ERROR: " + msg;
+            if (msg == null) {
+                final StringWriter sw = new StringWriter();
+                ex.printStackTrace(new PrintWriter(sw));
+                msg = sw.toString();
+            }
+            msg = msg.replace('"', '\'');
+            ret = "ERROR: " + msg;            
         } finally {
             if (writer != null) {
                 try {
@@ -730,8 +780,13 @@ public class DeDup {
             ret = "OK";
         } catch(Exception ex) {
             String msg = ex.getMessage();
-            msg = (msg == null) ? "" : msg.replace('"', '\'');
-            ret = "ERROR: " + msg;
+            if (msg == null) {
+                final StringWriter sw = new StringWriter();
+                ex.printStackTrace(new PrintWriter(sw));
+                msg = sw.toString();
+            }
+            msg = msg.replace('"', '\'');
+            ret = "ERROR: " + msg;            
         } finally {
             if (writer != null) {
                 try {
