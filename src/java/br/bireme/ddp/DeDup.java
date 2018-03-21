@@ -25,6 +25,8 @@ import br.bireme.ngrams.NGIndex;
 import br.bireme.ngrams.NGSchema;
 import br.bireme.ngrams.NGrams;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -444,7 +446,7 @@ public class DeDup {
 
         return json;
     }
-    
+
     @POST
     @Path("/putDocs/{database}/{schema}")
     @Consumes("text/plain;charset=utf-8")
@@ -466,7 +468,7 @@ public class DeDup {
         } else {
             try {
                 final Instances instances = getInstances();
-                final NGIndex index = instances.getIndexes().get(database);                
+                final NGIndex index = instances.getIndexes().get(database);
                 final NGSchema nschema = instances.getSchemas().get(schema);
                 if (nschema == null) {
                     throw new IllegalArgumentException(
@@ -541,11 +543,16 @@ public class DeDup {
                 }
             } catch(Exception ex) {
                 String msg = ex.getMessage();
-                msg = (msg == null) ? "" : msg.replace('"', '\'');
+                if (msg == null) {
+                  final StringWriter sw = new StringWriter();
+                  ex.printStackTrace(new PrintWriter(sw));
+                  msg = sw.toString();
+                }
+                msg = msg.replace('"', '\'');
                 ret = "ERROR: " + msg;
             }
         }
-        
+
         return ret;
     }
 
@@ -629,7 +636,7 @@ public class DeDup {
         }
         return ret;
     }
-    
+
     /**
      * * http://localhost:8084/DeDup/reset/lilacs
      * @param servletResponse
@@ -648,7 +655,7 @@ public class DeDup {
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         if (index == null) {
-            ret = "ERROR: missing 'database' parameter";        
+            ret = "ERROR: missing 'database' parameter";
         } else if (PROCESS_TOKEN) {
             if ((token == null) || token.isEmpty()) {
                 ret = "ERROR: invalid token value";
@@ -679,10 +686,10 @@ public class DeDup {
                 }
             }
         }
-            
-        return ret;    
-    }            
-    
+
+        return ret;
+    }
+
     /**
      * * http://localhost:8084/DeDup/optmize/lilacs
      * @param servletResponse
@@ -701,7 +708,7 @@ public class DeDup {
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         if (index == null) {
-            ret = "ERROR: missing 'database' parameter";        
+            ret = "ERROR: missing 'database' parameter";
         } else if (PROCESS_TOKEN) {
             if ((token == null) || token.isEmpty()) {
                 ret = "ERROR: invalid token value";
@@ -733,8 +740,8 @@ public class DeDup {
                 }
             }
         }
-            
-        return ret;    
+
+        return ret;
     }
 
     @POST
