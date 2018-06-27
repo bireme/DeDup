@@ -24,6 +24,7 @@ package br.bireme.ddp;
 import br.bireme.ngrams.NGIndex;
 import br.bireme.ngrams.NGSchema;
 import br.bireme.ngrams.NGrams;
+import br.bireme.ngrams.TestIndex;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -32,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -49,6 +52,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 
 /**
@@ -700,10 +704,12 @@ public class DeDup {
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         if (index == null) {
-            ret = "ERROR: missing 'database' parameter";
-        } else if (PROCESS_TOKEN) {
+            return "ERROR: missing 'database' parameter";
+            
+        }
+        if (PROCESS_TOKEN) {
             if ((token == null) || token.isEmpty()) {
-                ret = "ERROR: invalid token value";
+                return "ERROR: invalid token value";
             }
             // Check token here
         }
@@ -758,10 +764,11 @@ public class DeDup {
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         if (index == null) {
-            ret = "ERROR: missing 'database' parameter";
-        } else if (PROCESS_TOKEN) {
+            return "ERROR: missing 'database' parameter";
+        }
+        if (PROCESS_TOKEN) {
             if ((token == null) || token.isEmpty()) {
-                ret = "ERROR: invalid token value";
+                return "ERROR: invalid token value";
             }
             // Check token here
         }
@@ -799,6 +806,69 @@ public class DeDup {
         return ret;
     }
 
+    @GET
+    @Produces("text/plain;charset=utf-8") @Path("/test/{database}/{schema}")
+    public String testDatabase(@Context HttpServletResponse servletResponse,
+                               @PathParam("database") String index,
+                               @PathParam("schema") String schema,
+                               @QueryParam("token") final String token) {
+        IndexReader ireader = null;
+        String ret;
+
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+
+        if (index == null) {
+            return "ERROR: missing 'database' parameter";
+        }
+        if ((schema == null) || schema.isEmpty()) {
+            return "ERROR: missing 'schema' parameter";    
+        }
+        if (PROCESS_TOKEN) {
+            if ((token == null) || token.isEmpty()) {
+                return "ERROR: invalid token value";
+            }
+            // Check token here
+        }
+        
+        try {
+            final Instances instances = getInstances();
+            final Map<String, NGIndex> indexes = instances.getIndexes();
+            
+            final NGIndex idx = indexes.get(index);
+            if (idx == null) {
+                throw new IllegalArgumentException(
+                                     "invalid 'index' parameter: " + index);
+            }
+                        
+            final NGSchema nschema = instances.getSchemas().get(schema);                        
+            if (nschema == null) {
+                throw new IllegalArgumentException(
+                                     "invalid 'schema' parameter: " + schema);
+            }            
+            ireader = idx.getIndexSearcher().getIndexReader();
+
+            ret = "Index is " + (TestIndex.test(ireader, nschema) ? "OK" : "BAD") + "!";
+        } catch(Exception ex) {
+            String msg = ex.getMessage();
+            if (msg == null) {
+                final StringWriter sw = new StringWriter();
+                ex.printStackTrace(new PrintWriter(sw));
+                msg = sw.toString();
+            }
+            msg = msg.replace('"', '\'');
+            ret = "ERROR: " + msg;            
+        } finally {
+            if (ireader != null) {
+                try {
+                    ireader.close();
+                } catch (IOException ex) {
+                }
+            }
+        }
+
+        return ret;
+    }
+
     @POST
     @Path("/putXXX/{database}/{schema}/{id}")
     @Consumes("application/json")
@@ -811,7 +881,7 @@ public class DeDup {
 
         return json;
     }
-
+    
     @POST
     @Path("/xxx")
     @Consumes("application/json; charset=utf-8")
