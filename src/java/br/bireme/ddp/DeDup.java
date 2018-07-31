@@ -139,7 +139,7 @@ public class DeDup {
                 ex.printStackTrace(new PrintWriter(sw));
                 msg = sw.toString();
             }
-            msg = msg.replace('"', '\'');
+            msg = msg.replace('"', '\'').replace('\n', ' ');;
             json = "{\"ERROR\":\"" + msg + "\"}";
         }
         return json;
@@ -202,7 +202,7 @@ public class DeDup {
                 ex.printStackTrace(new PrintWriter(sw));
                 msg = sw.toString();
             }
-            msg = msg.replace('"', '\'');
+            msg = msg.replace('"', '\'').replace('\n', ' ');;
             json = "{\"ERROR\":\"" + msg + "\"}";
         }
         return json;
@@ -239,7 +239,7 @@ public class DeDup {
                 ex.printStackTrace(new PrintWriter(sw));
                 msg = sw.toString();
             }
-            msg = msg.replace('"', '\'');
+            msg = msg.replace('"', '\'').replace('\n', ' ');;
             json = "{\"ERROR\":\"" + msg + "\"}";
         }
         return json;
@@ -325,7 +325,7 @@ public class DeDup {
                     ex.printStackTrace(new PrintWriter(sw));
                     msg = sw.toString();
                 }
-                msg = msg.replace('"', '\'');
+                msg = msg.replace('"', '\'').replace('\n', ' ');;
                 json = "{\"ERROR\":\"" + msg + "\"}";
             }
         }
@@ -402,7 +402,7 @@ public class DeDup {
                     ex.printStackTrace(new PrintWriter(sw));
                     msg = sw.toString();
                 }
-                msg = msg.replace('"', '\'');
+                msg = msg.replace('"', '\'').replace('\n', ' ');
                 json = "{\"ERROR\":\"" + msg + "\"}";
             }
         }
@@ -469,7 +469,7 @@ public class DeDup {
                     ex.printStackTrace(new PrintWriter(sw));
                     msg = sw.toString();
                 }
-                msg = msg.replace('"', '\'');
+                msg = msg.replace('"', '\'').replace('\n', ' ');;
                 json = "{\"ERROR\":\"" + msg + "\"}";
             } finally {
                 if (writer != null) {
