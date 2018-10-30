@@ -1,23 +1,9 @@
 /*=========================================================================
 
-    Copyright © 2015 BIREME/PAHO/WHO
+    DeDup © Pan American Health Organization, 2018.
+    See License at: https://github.com/bireme/DeDup/blob/master/LICENSE.txt
 
-    This file is part of DeDup.
-
-    DeDup is free software: you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public License as
-    published by the Free Software Foundation, either version 2.1 of
-    the License, or (at your option) any later version.
-
-    DeDup is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with DeDup. If not, see <http://www.gnu.org/licenses/>.
-
-=========================================================================*/
+  ==========================================================================*/
 
 package br.bireme.ddp;
 
@@ -521,7 +507,7 @@ public class DeDup {
                     msg = sw.toString();
                 }
                 msg = msg.replace('"', '\'');
-                ret = "ERROR: " + msg;                
+                ret = "ERROR: " + msg;
             }
         }
         return ret;
@@ -671,7 +657,7 @@ public class DeDup {
                     msg = sw.toString();
                 }
                 msg = msg.replace('"', '\'');
-                ret = "ERROR: " + msg;                
+                ret = "ERROR: " + msg;
             } finally {
                 if (writer != null) {
                     try {
@@ -703,7 +689,7 @@ public class DeDup {
 
         if (index == null) {
             return "ERROR: missing 'database' parameter";
-            
+
         }
         if (PROCESS_TOKEN) {
             if ((token == null) || token.isEmpty()) {
@@ -731,7 +717,7 @@ public class DeDup {
                 msg = sw.toString();
             }
             msg = msg.replace('"', '\'');
-            ret = "ERROR: " + msg;            
+            ret = "ERROR: " + msg;
         } finally {
             if (writer != null) {
                 try {
@@ -791,7 +777,7 @@ public class DeDup {
                 msg = sw.toString();
             }
             msg = msg.replace('"', '\'');
-            ret = "ERROR: " + msg;            
+            ret = "ERROR: " + msg;
         } finally {
             if (writer != null) {
                 try {
@@ -819,7 +805,7 @@ public class DeDup {
             return "ERROR: missing 'database' parameter";
         }
         if ((schema == null) || schema.isEmpty()) {
-            return "ERROR: missing 'schema' parameter";    
+            return "ERROR: missing 'schema' parameter";
         }
         if (PROCESS_TOKEN) {
             if ((token == null) || token.isEmpty()) {
@@ -827,22 +813,22 @@ public class DeDup {
             }
             // Check token here
         }
-        
+
         try {
             final Instances instances = getInstances();
             final Map<String, NGIndex> indexes = instances.getIndexes();
-            
+
             final NGIndex idx = indexes.get(index);
             if (idx == null) {
                 throw new IllegalArgumentException(
                                      "invalid 'index' parameter: " + index);
             }
-                        
-            final NGSchema nschema = instances.getSchemas().get(schema);                        
+
+            final NGSchema nschema = instances.getSchemas().get(schema);
             if (nschema == null) {
                 throw new IllegalArgumentException(
                                      "invalid 'schema' parameter: " + schema);
-            }            
+            }
             ireader = idx.getIndexSearcher().getIndexReader();
 
             ret = "Index is " + (TestIndex.test(ireader, nschema) ? "OK" : "BAD") + "!";
@@ -854,7 +840,7 @@ public class DeDup {
                 msg = sw.toString();
             }
             msg = msg.replace('"', '\'');
-            ret = "ERROR: " + msg;            
+            ret = "ERROR: " + msg;
         } finally {
             if (ireader != null) {
                 try {
@@ -879,7 +865,7 @@ public class DeDup {
 
         return json;
     }
-    
+
     @POST
     @Path("/xxx")
     @Consumes("application/json; charset=utf-8")

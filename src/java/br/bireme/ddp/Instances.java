@@ -1,23 +1,9 @@
 /*=========================================================================
 
-    Copyright © 2015 BIREME/PAHO/WHO
+    DeDup © Pan American Health Organization, 2018.
+    See License at: https://github.com/bireme/DeDup/blob/master/LICENSE.txt
 
-    This file is part of DeDup.
-
-    DeDup is free software: you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public License as
-    published by the Free Software Foundation, either version 2.1 of
-    the License, or (at your option) any later version.
-
-    DeDup is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with DeDup. If not, see <http://www.gnu.org/licenses/>.
-
-=========================================================================*/
+  ==========================================================================*/
 
 package br.bireme.ddp;
 
@@ -45,7 +31,7 @@ import org.xml.sax.SAXException;
 public class Instances {
     private final Map<String, NGSchema> schemas;
     private final Map<String, NGIndex> indexes;
-    //private final Map<String, Set<NGIndex>> databases; 
+    //private final Map<String, Set<NGIndex>> databases;
 
     public Instances(final String workDir,
                      final String confFile) throws ParserConfigurationException,
@@ -68,7 +54,7 @@ public class Instances {
     public Map<String, NGIndex> getIndexes() {
         return indexes;
     }
-    
+
     /*public Map<String, Set<NGIndex>> getDatabases() {
         return databases;
     }*/
@@ -84,7 +70,7 @@ public class Instances {
         final DocumentBuilder db = dbf.newDocumentBuilder();
         final String path = getPath(workDir, confFile);
         final File file = new File(path);
-        
+
         if (!file.exists()) {
             throw new IOException("missing DeDup configuration file:" + path);
         }
@@ -98,14 +84,14 @@ public class Instances {
         parseIndexes(workDir, configNode);
         //parseDatabases(configNode);
     }
-    
+
     private String getPath(final String workDir,
                            final String path) {
         assert path != null;
-        
+
         final String tpath = path.trim();
         final String ret;
-        
+
         if (workDir == null) {
             ret = tpath;
         } else if (tpath.charAt(0) == '/') {
@@ -114,7 +100,7 @@ public class Instances {
             final String tworkDir = workDir.trim();
             ret = tworkDir + (tworkDir.endsWith("/") ? "" : "/") + tpath;
         }
-        
+
         return ret;
     }
 
@@ -130,7 +116,7 @@ public class Instances {
             if (schemas.containsKey(name)) {
                 throw new IOException("duplicated schema name:" + name);
             }
-            final String path = getPath(workDir, 
+            final String path = getPath(workDir,
                                         getChildContent(schNode, "path"));
             final NGSchema schema = new NGSchema(name, path,
                                           getChildContent(schNode, "encoding"));
@@ -150,13 +136,13 @@ public class Instances {
             if (indexes.containsKey(name)) {
                 throw new IOException("duplicated index name:" + name);
             }
-            final String path = getPath(workDir, 
+            final String path = getPath(workDir,
                                         getChildContent(idxNode, "path"));
             final NGIndex index = new NGIndex(name, path, false);
             indexes.put(name, index);
         }
     }
-    
+
     /*
     final void parseDatabases(final Node config) throws
                                                    ParserConfigurationException,
