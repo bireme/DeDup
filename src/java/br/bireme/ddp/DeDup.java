@@ -230,6 +230,43 @@ public class DeDup {
         }
         return json;
     }
+    
+    /*@GET
+    @Produces("application/json;charset=utf-8") @Path("/delete")
+    public String deleteDocument() {
+        final Instances instances;
+        String json;
+
+        try {
+            instances = getInstances();
+            final StringBuilder builder = new StringBuilder("{\"indexes\":[");
+            boolean first = true;
+
+            for (Map.Entry<String, NGIndex> entry: instances.getIndexes()
+                                                                  .entrySet()) {
+                if (first) {
+                    first = false;
+                } else {
+                    builder.append(",");
+                }
+                builder.append("\"");
+                builder.append(entry.getKey());
+                builder.append("\"");
+            }
+            builder.append("]}");
+            json = builder.toString();
+        } catch(Exception ex) {
+            String msg = ex.getMessage();
+            if (msg == null) {
+                final StringWriter sw = new StringWriter();
+                ex.printStackTrace(new PrintWriter(sw));
+                msg = sw.toString();
+            }
+            msg = msg.replace('"', '\'').replace('\n', ' ');;
+            json = "{\"ERROR\":\"" + msg + "\"}";
+        }
+        return json;
+    }*/
 
     /**
      * * http://localhost:8084/DeDup/get/duplicates/?database=lilacs&database=medline
