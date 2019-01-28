@@ -54,8 +54,8 @@ public class DeDup {
     private static final String QUANTITY = "quantity";
     private static final String SCHEMA = "schema";
     private static final String OCC_SEP = "//@//";
-
-    private final boolean PROCESS_TOKEN = false;
+    
+    private static final boolean PROCESS_TOKEN = false;
 
     @Context
     private ServletContext context;
@@ -231,42 +231,49 @@ public class DeDup {
         return json;
     }
     
-    /*@GET
-    @Produces("application/json;charset=utf-8") @Path("/delete")
-    public String deleteDocument() {
-        final Instances instances;
+    @GET
+    @Produces("application/json;charset=utf-8") @Path("/delete")    
+    public String deleteDocument(@Context HttpServletResponse servletResponse,
+                            @QueryParam("database") final List<String> indexList,
+                            @QueryParam("id") String id) {
         String json;
 
-        try {
-            instances = getInstances();
-            final StringBuilder builder = new StringBuilder("{\"indexes\":[");
-            boolean first = true;
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
-            for (Map.Entry<String, NGIndex> entry: instances.getIndexes()
-                                                                  .entrySet()) {
-                if (first) {
-                    first = false;
-                } else {
-                    builder.append(",");
+        if ((indexList == null) || (indexList.isEmpty())) {
+            json = "{\"ERROR\":\"missing 'database' parameter\"}";
+        } else if ((id == null) || (id.isEmpty())) {
+            json = "{\"ERROR\":\"missing 'id' parameter\"}";
+        } else {
+            try {
+                final Instances instances = getInstances();
+                final Map<String, NGIndex> indexes = instances.getIndexes();
+                for (String idxName : indexList) {
+                    final String[] split = idxName.split(" *" + OCC_SEP + " *");
+                    for (String idx : split) {
+                        final NGIndex index = indexes.get(idx);
+                        if (index == null) {
+                            throw new IllegalArgumentException(
+                                    "invalid 'index' parameter: " + idx);
+                        }
+                        NGrams.deleteDocument(id, index);
+                    }
                 }
-                builder.append("\"");
-                builder.append(entry.getKey());
-                builder.append("\"");
+                json = "{\"STATUS\":\"OK\"}";
+            } catch(Exception ex) {
+                String msg = ex.getMessage();
+                if (msg == null) {
+                    final StringWriter sw = new StringWriter();
+                    ex.printStackTrace(new PrintWriter(sw));
+                    msg = sw.toString();
+                }
+                msg = msg.replace('"', '\'').replace('\n', ' ');;
+                json = "{\"ERROR\":\"" + msg + "\"}";
             }
-            builder.append("]}");
-            json = builder.toString();
-        } catch(Exception ex) {
-            String msg = ex.getMessage();
-            if (msg == null) {
-                final StringWriter sw = new StringWriter();
-                ex.printStackTrace(new PrintWriter(sw));
-                msg = sw.toString();
-            }
-            msg = msg.replace('"', '\'').replace('\n', ' ');;
-            json = "{\"ERROR\":\"" + msg + "\"}";
         }
+
         return json;
-    }*/
+    }
 
     /**
      * * http://localhost:8084/DeDup/get/duplicates/?database=lilacs&database=medline
@@ -478,7 +485,7 @@ public class DeDup {
                                                      index.getName(), id, jdoc);
                         writer = index.getIndexWriter(true);
                         if (NGrams.indexDocument(index, writer, nschema,
-                                                                    pipedDoc)) {
+                                                              pipedDoc, false)) {
                             if (first) first = false; else json += ",";
                             json += "\"" + index.getName() + "\"";
                         }
@@ -649,7 +656,7 @@ public class DeDup {
                     throw new IllegalArgumentException(
                                        "invalid 'schema' parameter: " + schema);
                 }
-                final int dbPos = nschema.getNamesPos().get("databaseField");
+                final int dbPos = nschema.getNamesPos().get("database");
                 final String doc1 = strDocuments.trim().replaceAll("&nbsp;", " ");
                 final String[] docs = doc1.split(" *\n *");
 
@@ -679,7 +686,7 @@ public class DeDup {
                             }
                             writer = index.getIndexWriter(true);
                             if (!NGrams.indexDocument(index, writer, nschema,
-                                                                    pipedDoc)) {
+                                                              pipedDoc, false)) {
                                 throw new IllegalArgumentException(
                                                      "invalid document: " + doc);
                             }
