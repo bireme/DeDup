@@ -125,7 +125,7 @@ public class DeDup {
                 ex.printStackTrace(new PrintWriter(sw));
                 msg = sw.toString();
             }
-            msg = msg.replace('"', '\'').replace('\n', ' ');;
+            msg = msg.replace('"', '\'').replace('\n', ' ');
             json = "{\"ERROR\":\"" + msg + "\"}";
         }
         return json;
@@ -188,7 +188,7 @@ public class DeDup {
                 ex.printStackTrace(new PrintWriter(sw));
                 msg = sw.toString();
             }
-            msg = msg.replace('"', '\'').replace('\n', ' ');;
+            msg = msg.replace('"', '\'').replace('\n', ' ');
             json = "{\"ERROR\":\"" + msg + "\"}";
         }
         return json;
@@ -225,7 +225,7 @@ public class DeDup {
                 ex.printStackTrace(new PrintWriter(sw));
                 msg = sw.toString();
             }
-            msg = msg.replace('"', '\'').replace('\n', ' ');;
+            msg = msg.replace('"', '\'').replace('\n', ' ');
             json = "{\"ERROR\":\"" + msg + "\"}";
         }
         return json;
@@ -267,7 +267,7 @@ public class DeDup {
                     ex.printStackTrace(new PrintWriter(sw));
                     msg = sw.toString();
                 }
-                msg = msg.replace('"', '\'').replace('\n', ' ');;
+                msg = msg.replace('"', '\'').replace('\n', ' ');
                 json = "{\"ERROR\":\"" + msg + "\"}";
             }
         }
@@ -355,7 +355,7 @@ public class DeDup {
                     ex.printStackTrace(new PrintWriter(sw));
                     msg = sw.toString();
                 }
-                msg = msg.replace('"', '\'').replace('\n', ' ');;
+                msg = msg.replace('"', '\'').replace('\n', ' ');
                 json = "{\"ERROR\":\"" + msg + "\"}";
             }
         }
@@ -483,7 +483,7 @@ public class DeDup {
                         }
                         final String pipedDoc = NGrams.json2pipe(nschema,
                                                      index.getName(), id, jdoc);
-                        writer = index.getIndexWriter(true);
+                        writer = index.getIndexWriter();
                         if (NGrams.indexDocument(index, writer, nschema,
                                                               pipedDoc, false)) {
                             if (first) first = false; else json += ",";
@@ -499,13 +499,13 @@ public class DeDup {
                     ex.printStackTrace(new PrintWriter(sw));
                     msg = sw.toString();
                 }
-                msg = msg.replace('"', '\'').replace('\n', ' ');;
+                msg = msg.replace('"', '\'').replace('\n', ' ');
                 json = "{\"ERROR\":\"" + msg + "\"}";
             } finally {
                 if (writer != null) {
                     try {
-                        writer.close();
-                    } catch(Exception ex) {
+                        writer.commit();
+                    } catch(IOException ex) {
                     }
                 }
             }
@@ -593,7 +593,7 @@ public class DeDup {
                 final String[] docs = doc1.split(" *\n *");
 
                 for (String doc: docs) {
-                    final String[] elems = doc.split("\\|", Integer.MAX_VALUE);
+                    //final String[] elems = doc.split("\\|", Integer.MAX_VALUE);
 
                     for (String idxName : indexList) {
                        final String[] split = idxName.split(" *" + OCC_SEP + " *");
@@ -684,7 +684,7 @@ public class DeDup {
                               }
                               pos += 1;
                             }
-                            writer = index.getIndexWriter(true);
+                            writer = index.getIndexWriter();
                             if (!NGrams.indexDocument(index, writer, nschema,
                                                               pipedDoc, false)) {
                                 throw new IllegalArgumentException(
@@ -705,8 +705,8 @@ public class DeDup {
             } finally {
                 if (writer != null) {
                     try {
-                        writer.close();
-                    } catch(Exception ex) {
+                        writer.commit();
+                    } catch(IOException ex) {
                     }
                 }
             }
@@ -751,7 +751,7 @@ public class DeDup {
                 throw new IllegalArgumentException(
                                      "invalid 'index' parameter: " + index);
             }
-            writer = idx.getIndexWriter(false);
+            writer = idx.getIndexWriter();            
             ret = "OK";
         } catch(Exception ex) {
             String msg = ex.getMessage();
@@ -765,8 +765,8 @@ public class DeDup {
         } finally {
             if (writer != null) {
                 try {
-                    writer.close();
-                } catch(Exception ex) {
+                    writer.commit();
+                } catch(IOException ex) {
                 }
             }
         }
@@ -810,7 +810,7 @@ public class DeDup {
                 throw new IllegalArgumentException(
                                      "invalid 'index' parameter: " + index);
             }
-            writer = idx.getIndexWriter(true);
+            writer = idx.getIndexWriter();
             writer.forceMerge(1); // optimize index
             ret = "OK";
         } catch(Exception ex) {
@@ -825,8 +825,8 @@ public class DeDup {
         } finally {
             if (writer != null) {
                 try {
-                    writer.close();
-                } catch(Exception ex) {
+                    writer.commit();
+                } catch(IOException ex) {
                 }
             }
         }
