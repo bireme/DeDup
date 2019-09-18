@@ -340,7 +340,7 @@ public class DeDup {
                                     "invalid 'index' parameter: " + idx);
                         }
                         final Set<String> srcRes =
-                                     NGrams.search(index, nschema, expr, true);
+                               NGrams.search(index, nschema, expr, true, false);
                         for (String res : srcRes) {
                             results.add(idx, res);
                         }
@@ -417,7 +417,7 @@ public class DeDup {
                                     "invalid 'index' parameter: " + idx);
                         }
                         final Set<String> srcRes =
-                                     NGrams.search(index, nschema, expr, true);
+                                NGrams.search(index, nschema, expr, true, false);
                         for (String res : srcRes) {
                             results.add(idx, res);
                         }
@@ -605,7 +605,7 @@ public class DeDup {
                                     "invalid 'index' parameter: " + idx);
                             }
                             final Set<String> srcRes =
-                                      NGrams.search(index, nschema, doc, false);
+                               NGrams.search(index, nschema, doc, false, false);
                             for (String pipe: srcRes) {
                                 if (first) first = false; else ret += "\n";
                                 ret += pipe;
@@ -1144,7 +1144,6 @@ public class DeDup {
                     builder.append("\"").append(content.replace('\"' , '\''))
                                         .append("\"");
                 }
-
             }
             builder.append("}");
         }
