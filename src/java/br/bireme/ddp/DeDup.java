@@ -485,7 +485,7 @@ public class DeDup {
                                                      index.getName(), id, jdoc);
                         writer = index.getIndexWriter();
                         if (NGrams.indexDocument(index, writer, nschema,
-                                                              pipedDoc, false)) {
+                                                              pipedDoc, true)) {
                             if (first) first = false; else json += ",";
                             json += "\"" + index.getName() + "\"";
                         }
@@ -686,7 +686,7 @@ public class DeDup {
                             }
                             writer = index.getIndexWriter();
                             if (!NGrams.indexDocument(index, writer, nschema,
-                                                              pipedDoc, false)) {
+                                                              pipedDoc, true)) {
                                 throw new IllegalArgumentException(
                                                      "invalid document: " + doc);
                             }
