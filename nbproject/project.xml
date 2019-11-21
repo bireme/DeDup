@@ -14,10 +14,6 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${reference.NGrams.jar}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library dirs="200">
                     <file>${libs.restlib.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
@@ -42,6 +38,14 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
+                    <file>${file.reference.javaee-endorsed-api-6.0.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library dirs="200">
+                    <file>${file.reference.json-simple-1.1.1.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library dirs="200">
                     <file>${file.reference.lucene-analyzers-common-8.2.0.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
@@ -62,7 +66,7 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.json-simple-1.1.1.jar}</file>
+                    <file>${reference.NGrams.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>

@@ -19,9 +19,31 @@
     final static String SERVER_HOST = "dedup.bireme.org";
 
     String readURL(final String url) throws MalformedURLException, IOException {
-        final URL xurl = new URL(url);
+        HttpURLConnection conn;
+        String url1 = url;
+        int times = 0;
+        
+        while (true) {
+            if (times++ > 3) throw new IOException("Stuck in redirect loop");
+            
+            final URL resourceUrl = new URL(url1);
+            
+            conn = (HttpURLConnection) resourceUrl.openConnection();
+            conn.setInstanceFollowRedirects(false);   // Make the logic below easier to detect redirections
+            
+            final int respCode = conn.getResponseCode();
+            if ((respCode == HttpURLConnection.HTTP_MOVED_PERM) ||
+                (respCode == HttpURLConnection.HTTP_MOVED_TEMP)) {
+                    final String location = URLDecoder.decode(
+                                      conn.getHeaderField("Location"), "UTF-8");                    
+                    final URL next = new URL(resourceUrl, location);  // Deal with relative URLs                    
+                    url1 = next.toExternalForm();
+            } else if (respCode == HttpURLConnection.HTTP_OK) break;
+            else throw new IOException("Connection ERROR:" + respCode);
+        }
+    
         final BufferedReader in = new BufferedReader(
-            new InputStreamReader(xurl.openStream(), "UTF-8"));
+            new InputStreamReader(conn.getInputStream(), "UTF-8"));
         final StringBuilder builder = new StringBuilder();
 
         String inputLine;
@@ -29,8 +51,19 @@
             builder.append(inputLine);
         }
         in.close();
+        conn.disconnect();
 
         return builder.toString();
+    }
+    
+    String getResponseCode(final String url) throws MalformedURLException, IOException {
+        HttpURLConnection conn;
+        final URL resourceUrl = new URL(url);
+            
+        conn = (HttpURLConnection) resourceUrl.openConnection();
+        conn.setInstanceFollowRedirects(false);   // Make the logic below easier to detect redirections
+            
+        return Integer.toString(conn.getResponseCode());
     }
 
     Set<String> getSchemas(final HttpServletRequest request) {
@@ -316,5 +349,6 @@ function putPage() {
             <br/>
             <font size="2">&ast; Usar como separador de ocorrências a sequência: &nbsp;<i>//@//</i></font><br/>
         </form>
+            databases = <%=readURL("http://dedup.bireme.org/services/indexes")%>
     </body>
 </html>
