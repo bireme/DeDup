@@ -1,11 +1,8 @@
 <%-- 
   =========================================================================
-
     DeDup © Pan American Health Organization, 2018.
     See License at: https://github.com/bireme/DeDup/blob/master/LICENSE.txt
-
   ==========================================================================
-
     Document   : DeDup
     Created on : 19/01/2016, 11:01:13
     Author     : Heitor Barbieri
@@ -17,7 +14,6 @@
 
 <%!
     final static String SERVER_HOST = "dedup.bireme.org";
-
     String readURL(final String url) throws MalformedURLException, IOException {
         HttpURLConnection conn;
         String url1 = url;
@@ -45,14 +41,12 @@
         final BufferedReader in = new BufferedReader(
             new InputStreamReader(conn.getInputStream(), "UTF-8"));
         final StringBuilder builder = new StringBuilder();
-
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
             builder.append(inputLine);
         }
         in.close();
         conn.disconnect();
-
         return builder.toString();
     }
     
@@ -65,10 +59,8 @@
             
         return Integer.toString(conn.getResponseCode());
     }
-
     Set<String> getSchemas(final HttpServletRequest request) {
         final Set<String> schemas = new TreeSet<String>();
-
         try {
             final String serverName = request.getServerName();
             final int serverPort = request.getServerPort();
@@ -82,7 +74,6 @@
             for (Object obj2: array) {
                 schemas.add((String)obj2);
             }
-
         } catch(Exception ex) {
             final String str = ex.getMessage();
             System.out.println(str);
@@ -90,10 +81,8 @@
         }
         return schemas;
     }
-
     Set<String> getDatabases(final HttpServletRequest request) {
         final Set<String> databases = new TreeSet<String>();
-
         try {
             final String serverName = request.getServerName();
             final int serverPort = request.getServerPort();
@@ -114,11 +103,9 @@
         }
         return databases;
     }
-
     Set<String> getSchema(final HttpServletRequest request,
                           final String schema) {
         final Set<String> xschema = new TreeSet<String>();
-
         try {
             final String serverName = request.getServerName();
             final int serverPort = request.getServerPort();
@@ -140,7 +127,6 @@
         }
         return xschema;
     }
-
 %>
 
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
@@ -163,7 +149,6 @@ function reloadPage() {
                                               + dbValue + "&schema=" + schValue;
     window.location=path;
 }
-
 function reloadPagePost() {
     var database = document.getElementById("db");
     var dbValue = database.options[database.selectedIndex].value;
@@ -183,31 +168,24 @@ function reloadPagePost() {
     var form = document.createElement("form");
     var hiddenField1 = document.createElement("h1");
     var hiddenField2 = document.createElement("h2");
-
     form.setAttribute("charset", "UTF-8");
     form.setAttribute("method", "post");
     //form.setAttribute("method", "get");
     form.setAttribute("action", path);
-
     hiddenField1.setAttribute("type", "hidden");
     hiddenField1.setAttribute("name", "database");
     hiddenField1.setAttribute("value", dbValue);
-
     hiddenField2.setAttribute("type", "hidden");
     hiddenField2.setAttribute("name", "schema");
     hiddenField2.setAttribute("value", schValue);
-
     form.appendChild(hiddenField1);
     form.appendChild(hiddenField2);
-
     document.body.appendChild(form);
     form.submit();
 }
-
 function teste() {
     alert("Debug da funcao teste()");
 }
-
 function putPage() {
     var database = document.getElementById("db");
     var dbValue = database.options[database.selectedIndex].value;
@@ -349,6 +327,5 @@ function putPage() {
             <br/>
             <font size="2">&ast; Usar como separador de ocorrências a sequência: &nbsp;<i>//@//</i></font><br/>
         </form>
-            databases = <%=readURL("http://dedup.bireme.org/services/indexes")%>
     </body>
 </html>

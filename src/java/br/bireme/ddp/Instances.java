@@ -80,8 +80,8 @@ public class Instances {
             throw new IOException("missing 'config' node");
         }
 
-        parseSchemas(workDir, configNode);
-        parseIndexes(workDir, configNode);
+        parseSchemas(workDir, confFile, configNode);
+        parseIndexes(workDir, confFile, configNode);
         //parseDatabases(configNode);
     }
 
@@ -105,6 +105,7 @@ public class Instances {
     }
 
     private void parseSchemas(final String workDir,
+                              final String confFile,
                               final Node config) throws
                                                    ParserConfigurationException,
                                                    SAXException,
@@ -112,19 +113,20 @@ public class Instances {
         assert config != null;
 
         for (Node schNode : getNodes(config, "schema")) {
-            final String name = getChildContent(schNode, "name");
+            final String name = getChildContent(confFile, schNode, "name");
             if (schemas.containsKey(name)) {
                 throw new IOException("duplicated schema name:" + name);
             }
             final String path = getPath(workDir,
-                                        getChildContent(schNode, "path"));
+                                    getChildContent(confFile, schNode, "path"));
             final NGSchema schema = new NGSchema(name, path,
-                                          getChildContent(schNode, "encoding"));
+                                getChildContent(confFile, schNode, "encoding"));
             schemas.put(name, schema);
         }
     }
 
     private void parseIndexes(final String workDir,
+                              final String confFile,
                               final Node config) throws
                                                    ParserConfigurationException,
                                                    SAXException,
@@ -132,45 +134,16 @@ public class Instances {
         assert config != null;
 
         for (Node idxNode : getNodes(config, "index")) {
-            final String name = getChildContent(idxNode, "name");
+            final String name = getChildContent(confFile, idxNode, "name");
             if (indexes.containsKey(name)) {
                 throw new IOException("duplicated index name:" + name);
             }
             final String path = getPath(workDir,
-                                        getChildContent(idxNode, "path"));
+                                    getChildContent(confFile, idxNode, "path"));
             final NGIndex index = new NGIndex(name, path, false);
             indexes.put(name, index);
         }
     }
-
-    /*
-    final void parseDatabases(final Node config) throws
-                                                   ParserConfigurationException,
-                                                   SAXException,
-                                                   IOException {
-        assert config != null;
-
-        for (Node dbNode : getNodes(config, "database")) {
-            final String name = getChildContent(dbNode, "name");
-            if (databases.containsKey(name)) {
-                throw new IOException("duplicated database name:" + name);
-            }
-            final Set<NGIndex> hngi = new HashSet<NGIndex>();
-            databases.put(name, hngi);
-
-            for (Node idxNode : getNodes(dbNode, "index")) {
-                final NGIndex ngi = indexes.get(idxNode.getTextContent());
-                if (ngi == null) {
-                    throw new IOException("missing database/index element");
-                }
-                hngi.add(ngi);
-            }
-            if (hngi.isEmpty()) {
-                throw new IOException("missing database/index element");
-            }
-        }
-    }
-    */
 
     private List<Node> getNodes(final Node root,
                                 final String nname) {
@@ -191,7 +164,8 @@ public class Instances {
         return lst;
     }
 
-    private String getChildContent(final Node root,
+    private String getChildContent(final String confFile,
+                                   final Node root,
                                    final String childName) throws IOException {
         assert root != null;
         assert childName != null;
@@ -208,7 +182,8 @@ public class Instances {
             }
         }
         if (content == null) {
-            throw new IOException("missing '" + childName + "' node");
+            throw new IOException("[" + confFile + "] - missing '" + childName + 
+                                                                      "' node");
         }
 
         return content.trim();

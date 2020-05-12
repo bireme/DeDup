@@ -96,6 +96,8 @@ public class DeDup {
     public void DeDupApp(@Context final HttpServletRequest request,
                          @Context final HttpServletResponse response)
                                           throws ServletException, IOException {
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        
         //final String nextJSP = "/posthtml.html";
         final String nextJSP = "/DeDup.jsp";
         //System.out.println("path=" + context.getContextPath());
@@ -106,9 +108,12 @@ public class DeDup {
 
     @GET
     @Produces("application/json;charset=utf-8") @Path("/schema/{schema}")
-    public String showSchema(@PathParam("schema") String schema) {
+    public String showSchema(@Context HttpServletResponse servletResponse,
+                             @PathParam("schema") String schema) {
         final Instances instances;
         String json;
+        
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         try {
             instances = getInstances();
@@ -133,10 +138,13 @@ public class DeDup {
 
     @GET
     @Produces("application/xml;charset=utf-8") @Path("/schema/xml/{schema}")
-    public String showSchemaXml(@PathParam("schema") String schema) {
+    public String showSchemaXml(@Context HttpServletResponse servletResponse,
+                                @PathParam("schema") String schema) {
         final Instances instances;
         String xml;
 
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+        
         try {
             instances = getInstances();
             final NGSchema nschema = instances.getSchemas().get(schema);
@@ -160,10 +168,12 @@ public class DeDup {
 
     @GET
     @Produces("application/json;charset=utf-8") @Path("/schemas")
-    public String showSchemas() {
+    public String showSchemas(@Context HttpServletResponse servletResponse) {
         final Instances instances;
         String json;
 
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+        
         try {
             instances = getInstances();
             final StringBuilder builder = new StringBuilder("{\"schemas\":[");
@@ -196,9 +206,11 @@ public class DeDup {
 
     @GET
     @Produces("application/json;charset=utf-8") @Path("/indexes")
-    public String showIndexes() {
+    public String showIndexes(@Context HttpServletResponse servletResponse) {
         final Instances instances;
         String json;
+        
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         try {
             instances = getInstances();
@@ -744,7 +756,10 @@ public class DeDup {
                 throw new IllegalArgumentException(
                                      "invalid 'index' parameter: " + index);
             }
-            writer = idx.getIndexWriter();            
+            writer = idx.getIndexWriter();
+            writer.close();  // Grant that the index is created
+            writer = idx.getIndexWriter();
+            writer.deleteAll();
             ret = "OK";
         } catch(Exception ex) {
             String msg = ex.getMessage();
