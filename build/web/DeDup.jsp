@@ -65,7 +65,7 @@
             final String serverName = request.getServerName();
             final int serverPort = request.getServerPort();
             final String url = serverName.equals(SERVER_HOST)
-                               ? "http://" + serverName +  "/services/schemas"
+                               ? "https://" + serverName +  "/services/schemas"
                                : "http://" + serverName + ":" + serverPort +
                                                      "/DeDup/services/schemas";
             final String json = readURL(url);
@@ -87,7 +87,7 @@
             final String serverName = request.getServerName();
             final int serverPort = request.getServerPort();
             final String url = serverName.equals(SERVER_HOST)
-                               ? "http://" + serverName + "/services/indexes"
+                               ? "https://" + serverName + "/services/indexes"
                                : "http://" + serverName + ":" + serverPort +
                                                "/DeDup/services/indexes";
             final String json = readURL(url);
@@ -110,7 +110,7 @@
             final String serverName = request.getServerName();
             final int serverPort = request.getServerPort();
             final String url = serverName.equals(SERVER_HOST)
-                         ? "http://" + serverName + "/services/schema/" + schema
+                         ? "https://" + serverName + "/services/schema/" + schema
                          : "http://" + serverName + ":" + serverPort +
                                              "/DeDup/services/schema/" + schema;
             final String json = readURL(url);
@@ -135,36 +135,42 @@ function reloadPage() {
     var dbValue = database.options[database.selectedIndex].value;
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
+    var protocol = "";
     var host = "";
     var hostname = document.location.hostname;
     var path0 = "";
     if (hostname === "<%=SERVER_HOST%>") {
+        protocol = "https://";
         host = hostname;
         path0 = "/services/";
     } else {
+        protocol = "http://";
         host = document.location.host;
         path0 = "/DeDup/services/";
     }
-    var path = "http://" + host + path0 + "?database="
+    var path = protocol + host + path0 + "?database="
                                               + dbValue + "&schema=" + schValue;
     window.location=path;
 }
-function reloadPagePost() {
+function reloadPagePost() {alert(path);
     var database = document.getElementById("db");
     var dbValue = database.options[database.selectedIndex].value;
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
+    var protocol = "";
     var host = "";
     var hostname = document.location.hostname;
     var path0 = "";
     if (hostname === "<%=SERVER_HOST%>") {
+        protocol = "https://";
         host = hostname;
         path0 = "/services/";
     } else {
+        protocol = "http://";
         host = document.location.host;
         path0 = "/DeDup/services/";
     }
-    var path = "http://" + host + path0;
+    var path = protocol + host + path0;
     var form = document.createElement("form");
     var hiddenField1 = document.createElement("h1");
     var hiddenField2 = document.createElement("h2");
@@ -192,18 +198,20 @@ function putPage() {
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
     var id = "only_for_test";
+    var protocol = "";
     var host = "";
-    var port = document.location.port;
     var hostname = document.location.hostname;
     var path0 = "";
     if (hostname === "<%=SERVER_HOST%>") {
+        protocol = "https://";
         host = hostname;
         path0 = "/services/put/";
     } else {
+        protocol = "http://";
         host = document.location.host;
         path0 = "/DeDup/services/put/";
     }
-    var path = "http://" + host + path0 + dbValue + "/" + schValue + "/" + id;
+    var path = protocol + host + path0 + dbValue + "/" + schValue + "/" + id;
     var json = "{\"db\":\"" + dbValue + "\",\"schema\":\"" + schValue + "\"";
     var inputs = document.getElementsByTagName("*");
     for (var i = 0; i < inputs.length; i++) {
@@ -247,7 +255,7 @@ function putPage() {
             final String serverName = request.getServerName();
             final String port = Integer.toString(request.getLocalPort());
             final String path = (serverName.equals(SERVER_HOST))
-                    ? ("http://" + serverName + "/services/duplicates")
+                    ? ("https://" + serverName + "/services/duplicates")
                     : ("http://" + serverName + ":" + port + "/DeDup/services/duplicates");
         %>
         <form action="<%=path%>" method="post" >
