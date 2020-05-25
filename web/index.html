@@ -73,8 +73,8 @@ and open the template in the editor.
            &lt;paramN&gt; - document field N as defined in schema. See 'Show One Schema'. Post param<br/>
         </p>
         
-        <h2>7) Put Document</h2>
-        <p><i>description:</i> Add a documento into a database index(es)</p>
+        <h2>7) Put Document(s)</h2>
+        <p><i>description:</i> Add a document into one or more database indexes</p>
         <p><i>path:</i> http://&lt;host&gt;:&lt;port&gt;/DeDup/services/put/&lt;database&gt;/&lt;schema&gt;/&lt;id&gt;</p>
         <p><i>method:</i> POST</p>
         <p><i>consumes:</i> application/json</p>
@@ -83,6 +83,17 @@ and open the template in the editor.
            &lt;database&gt; - index name. See 'Show Indexes'. Repetitive parameter.<br/>
            &lt;schema&gt; - schema name. See 'Show Schemas'.<br/>
            &lt;id&gt; - document id.<br/>           
-        </p>        
+        </p>     
+        
+        <h2>8) Delete Document(s)</h2>
+        <p><i>description:</i> Delete one or more documents from one or more database indexes</p>
+        <p><i>path:</i> http://&lt;host&gt;:&lt;port&gt;/DeDup/services/put/&lt;database&gt;/&lt;schema&gt;/&lt;id&gt;</p>
+        <p><i>method:</i> GET</p>
+        <p><i>consumes:</i> application/json</p>
+        <p><i>produces:</i> application/json</p>
+        <p><i>parameters:</i><br/>
+           &lt;database&gt; - index name. See 'Show Indexes'. Repetitive parameter.<br/>
+           &lt;id&gt; - document id. If the id is followed by '*', then more than one document could be deleted<br/>           
+        </p>     
     </body>
 </html>
