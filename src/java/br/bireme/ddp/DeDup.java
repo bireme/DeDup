@@ -352,7 +352,7 @@ public class DeDup {
                                     "invalid 'index' parameter: " + idx);
                         }
                         final Set<String> srcRes =
-                               NGrams.search(index, nschema, expr, true, false);
+                               NGrams.search(index, nschema, expr, false, false);
                         for (String res : srcRes) {
                             results.add(idx, res);
                         }
@@ -429,7 +429,7 @@ public class DeDup {
                                     "invalid 'index' parameter: " + idx);
                         }
                         final Set<String> srcRes =
-                                NGrams.search(index, nschema, expr, true, false);
+                                NGrams.search(index, nschema, expr, false, false);
                         for (String res : srcRes) {
                             results.add(idx, res);
                         }
