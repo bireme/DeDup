@@ -10,10 +10,12 @@
 
 <%@page language="java"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="java.util.*,java.net.*,java.io.*,org.json.simple.* " %>
+<%@page import="java.util.*,java.util.regex.*,java.net.*,java.io.*,org.json.simple.*,javax.servlet.ServletConfig" %>
 
 <%!
-    final static String SERVER_HOST = "dedup.bireme.org";
+    final static String SERVER_HOST = "dedup.bireme.org";    
+    String serverPort; // = getServletContext().getInitParameter("SERVER_PORT"); //getServletConfig().getInitParameter("SERVER_PORT");
+    
     String readURL(final String url) throws MalformedURLException, IOException {
         HttpURLConnection conn;
         String url1 = url;
@@ -63,10 +65,12 @@
         final Set<String> schemas = new TreeSet<String>();
         try {
             final String serverName = request.getServerName();
-            final int serverPort = request.getServerPort();
+            /*final int serverPort = request.getServerPort();
             final String url = serverName.equals(SERVER_HOST)
                                ? "https://" + serverName +  "/services/schemas"
                                : "http://" + serverName + ":" + serverPort +
+                                                     "/DeDup/services/schemas";*/
+            final String url = "http://localhost:" + serverPort +
                                                      "/DeDup/services/schemas";
             final String json = readURL(url);
             final JSONObject obj = (JSONObject)JSONValue.parse(json);
@@ -85,11 +89,13 @@
         final Set<String> databases = new TreeSet<String>();
         try {
             final String serverName = request.getServerName();
-            final int serverPort = request.getServerPort();
+            /*final int serverPort = request.getServerPort();
             final String url = serverName.equals(SERVER_HOST)
                                ? "https://" + serverName + "/services/indexes"
                                : "http://" + serverName + ":" + serverPort +
-                                               "/DeDup/services/indexes";
+                                               "/DeDup/services/indexes";*/
+            final String url = "http://localhost:" + serverPort +
+                                               "/DeDup/services/indexes";          
             final String json = readURL(url);
             final JSONObject obj = (JSONObject)JSONValue.parse(json);
             final JSONArray array = (JSONArray)obj.get("indexes");
@@ -108,11 +114,8 @@
         final Set<String> xschema = new TreeSet<String>();
         try {
             final String serverName = request.getServerName();
-            final int serverPort = request.getServerPort();
-            final String url = serverName.equals(SERVER_HOST)
-                         ? "https://" + serverName + "/services/schema/" + schema
-                         : "http://" + serverName + ":" + serverPort +
-                                             "/DeDup/services/schema/" + schema;
+            final String url = "http://localhost:" + serverPort +
+                                   "/DeDup/services/schema/" + schema;
             final String json = readURL(url);
             final JSONObject obj = (JSONObject)JSONValue.parse(json);
             final JSONArray array = (JSONArray)obj.get("params");
@@ -130,50 +133,25 @@
 %>
 
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
-function reloadPage() {
+function reloadPage(remoteUrl) {
     var database = document.getElementById("db");
     var dbValue = database.options[database.selectedIndex].value;
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
-    var protocol = "";
-    var host = "";
-    var hostname = document.location.hostname;
-    var path0 = "";
-    if (hostname === "<%=SERVER_HOST%>") {
-        protocol = "https://";
-        host = hostname;
-        path0 = "/services/";
-    } else {
-        protocol = "http://";
-        host = document.location.host;
-        path0 = "/DeDup/services/";
-    }
-    var path = protocol + host + path0 + "?database="
-                                              + dbValue + "&schema=" + schValue;
+    var path = remoteUrl + "?database=" + dbValue + "&schema=" + schValue;                                
+ 
     window.location=path;
 }
-function reloadPagePost() {alert(path);
+function reloadPagePost(remoteUrl) {
     var database = document.getElementById("db");
     var dbValue = database.options[database.selectedIndex].value;
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
-    var protocol = "";
-    var host = "";
-    var hostname = document.location.hostname;
-    var path0 = "";
-    if (hostname === "<%=SERVER_HOST%>") {
-        protocol = "https://";
-        host = hostname;
-        path0 = "/services/";
-    } else {
-        protocol = "http://";
-        host = document.location.host;
-        path0 = "/DeDup/services/";
-    }
-    var path = protocol + host + path0;
+    var path = remoteUrl;
     var form = document.createElement("form");
     var hiddenField1 = document.createElement("h1");
     var hiddenField2 = document.createElement("h2");
+    
     form.setAttribute("charset", "UTF-8");
     form.setAttribute("method", "post");
     //form.setAttribute("method", "get");
@@ -187,33 +165,22 @@ function reloadPagePost() {alert(path);
     form.appendChild(hiddenField1);
     form.appendChild(hiddenField2);
     document.body.appendChild(form);
+    
     form.submit();
 }
 function teste() {
     alert("Debug da funcao teste()");
 }
-function putPage() {
+function putPage(remoteUrl) {
     var database = document.getElementById("db");
     var dbValue = database.options[database.selectedIndex].value;
     var schema = document.getElementById("sch");
     var schValue = schema.options[schema.selectedIndex].value;
     var id = "only_for_test";
-    var protocol = "";
-    var host = "";
-    var hostname = document.location.hostname;
-    var path0 = "";
-    if (hostname === "<%=SERVER_HOST%>") {
-        protocol = "https://";
-        host = hostname;
-        path0 = "/services/put/";
-    } else {
-        protocol = "http://";
-        host = document.location.host;
-        path0 = "/DeDup/services/put/";
-    }
-    var path = protocol + host + path0 + dbValue + "/" + schValue + "/" + id;
+    var path = remoteUrl + "/put/" + dbValue + "/" + schValue + "/" + id; 
     var json = "{\"db\":\"" + dbValue + "\",\"schema\":\"" + schValue + "\"";
     var inputs = document.getElementsByTagName("*");
+    
     for (var i = 0; i < inputs.length; i++) {
         if (typeof inputs[i].type !== 'undefined') {
             var typeName = inputs[i].type.toLowerCase();
@@ -225,15 +192,15 @@ function putPage() {
     json += "}";
     var xhr = new XMLHttpRequest();
     xhr.open('POST', path);
-    //alert("path:" + path + " json:[" + json + "]");
+    alert("path:" + path + " json:[" + json + "]");
     xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             //alert("Documento adicionado.");
             return "<html><h1>OK - inserted</h1></html>";
         } else {
-            alert("readyState:" + xhr.readyState + " status:" + xhr.status +
-                                        " response:[" + xhr.responseText + "]");
+            /*alert("readyState:" + xhr.readyState + " status:" + xhr.status +
+                                        " response:[" + xhr.responseText + "]");*/
             return "<html><h1>ERROR - "  + xhr.readyState + " status:" +
                     xhr.status + " response:[" + xhr.responseText + "]";
         }
@@ -252,16 +219,20 @@ function putPage() {
         <h1>DeDup Application</h1>
 
         <%
-            final String serverName = request.getServerName();
-            final String port = Integer.toString(request.getLocalPort());
-            final String path = (serverName.equals(SERVER_HOST))
-                    ? ("https://" + serverName + "/services/duplicates")
-                    : ("http://" + serverName + ":" + port + "/DeDup/services/duplicates");
+            serverPort = pageContext.getServletContext().getInitParameter("SERVER_PORT");
+            final String hostName = pageContext.getRequest().getServerName();
+            final String requestUrl = request.getRequestURL().toString();
+            final Matcher mat = Pattern.compile(":(\\d{2,4})/").matcher(requestUrl);
+            final String remotePort = (mat.find()) ? mat.group(1) : serverPort; 
+            final String path = (SERVER_HOST.equals(hostName)) ? ("https://" + SERVER_HOST + "/services/duplicates") 
+                : "http://localhost:" + remotePort + "/DeDup/services/duplicates";
+            final String remoteUrl = (SERVER_HOST.equals(hostName)) ? ("https://" + SERVER_HOST + "/services") 
+                : "http://localhost:" + remotePort + "/DeDup/services/";
         %>
         <form action="<%=path%>" method="post" >
             Base de dados:
             <select name="database" id="db">
-                <%
+                <% 
                    final Set<String> databases = getDatabases(request);
                    final Iterator<String> it = databases.iterator();
                    String dbase = request.getParameter("database");
@@ -278,7 +249,7 @@ function putPage() {
             </select>
             <br/><br/>
             Schema:
-            <select onchange="reloadPage()" name="schema" id="sch">
+            <select onchange="reloadPage('<%=remoteUrl%>')" name="schema" id="sch">
                 <%
                     final Set<String> schemas = getSchemas(request);
                     final Iterator<String> it2 = schemas.iterator();
@@ -327,9 +298,7 @@ function putPage() {
                 }
                 schs += "]";
             %>
-            <!--button type="button" value="Armazenar" onclick="putPage(<%=schs%>)">Armazenar</button-->
-            <!--button type="button" value="Armazenar" onclick="putPage()">Armazenar</button-->
-            <button type="button" value="Armazenar" onclick="putPage()">Armazenar</button>
+            <button type="button" value="Armazenar" onclick="putPage('<%=remoteUrl%>')">Armazenar</button>
             <input type="submit" value="Pesquisar">
             <br/>
             <br/>
