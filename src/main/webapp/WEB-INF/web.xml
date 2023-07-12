@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <display-name>DeDup</display-name>
+    <context-param>
+        <description>DeDup server port</description>
+        <param-name>SERVER_PORT</param-name>
+        <param-value>8180</param-value>
+    </context-param>
+    <context-param>
+        <description>DeDup work directory</description>
+        <param-name>DEDUP_WORK_DIR</param-name>
+        <param-value>/home/javaapps/DeDup</param-value>
+    </context-param>
+    <context-param>
+        <description>DeDup configuration file</description>
+        <param-name>DEDUP_CONF_FILE</param-name>
+        <param-value>config_LILACS.cfg</param-value>
+    </context-param>
+
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+</web-app>
