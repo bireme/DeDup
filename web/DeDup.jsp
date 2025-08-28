@@ -13,7 +13,8 @@
 <%@page import="java.util.*,java.util.regex.*,java.net.*,java.io.*,org.json.simple.*,javax.servlet.ServletConfig" %>
 
 <%!
-    final static String SERVER_HOST = "dedup.bireme.org";    
+    final static String SERVER_HOST = "dedup.bireme.org";
+    final static String PRODUCTION_SERVER = "diamante15.bireme.br";
     String serverPort; // = getServletContext().getInitParameter("SERVER_PORT"); //getServletConfig().getInitParameter("SERVER_PORT");
     
     String readURL(final String url) throws MalformedURLException, IOException {
@@ -65,11 +66,6 @@
         final Set<String> schemas = new TreeSet<String>();
         try {
             final String serverName = request.getServerName();
-            /*final int serverPort = request.getServerPort();
-            final String url = serverName.equals(SERVER_HOST)
-                               ? "https://" + serverName +  "/services/schemas"
-                               : "http://" + serverName + ":" + serverPort +
-                                                     "/DeDup/services/schemas";*/
             final String url = "http://localhost:" + serverPort +
                                                      "/DeDup/services/schemas";
             final String json = readURL(url);
@@ -80,7 +76,7 @@
             }
         } catch(Exception ex) {
             final String str = ex.getMessage();
-            System.out.println(str);
+            //System.out.println(str);
             schemas.clear();
         }
         return schemas;
@@ -89,11 +85,6 @@
         final Set<String> databases = new TreeSet<String>();
         try {
             final String serverName = request.getServerName();
-            /*final int serverPort = request.getServerPort();
-            final String url = serverName.equals(SERVER_HOST)
-                               ? "https://" + serverName + "/services/indexes"
-                               : "http://" + serverName + ":" + serverPort +
-                                               "/DeDup/services/indexes";*/
             final String url = "http://localhost:" + serverPort +
                                                "/DeDup/services/indexes";          
             final String json = readURL(url);
@@ -104,7 +95,7 @@
             }
         } catch(Exception ex) {
             final String str = ex.getMessage();
-            System.out.println(str);
+            //System.out.println(str);
             databases.clear();
         }
         return databases;
@@ -125,7 +116,7 @@
             }
         } catch(Exception ex) {
             final String str = ex.getMessage();
-            System.out.println(str);
+            //System.out.println(str);
             xschema.clear();
         }
         return xschema;
@@ -220,14 +211,14 @@ function putPage(remoteUrl) {
 
         <%
             serverPort = pageContext.getServletContext().getInitParameter("SERVER_PORT");
-            final String hostName = pageContext.getRequest().getServerName();
+            final String hostName = pageContext.getRequest().getServerName().trim();
             final String requestUrl = request.getRequestURL().toString();
             final Matcher mat = Pattern.compile(":(\\d{2,4})/").matcher(requestUrl);
             final String remotePort = (mat.find()) ? mat.group(1) : serverPort; 
-            final String path = (SERVER_HOST.equals(hostName)) ? ("https://" + SERVER_HOST + "/services/duplicates") 
-                : "http://localhost:" + remotePort + "/DeDup/services/duplicates";
-            final String remoteUrl = (SERVER_HOST.equals(hostName)) ? ("https://" + SERVER_HOST + "/services") 
-                : "http://localhost:" + remotePort + "/DeDup/services/";
+            final String path = (requestUrl.contains(PRODUCTION_SERVER)) ? ("https://" + SERVER_HOST + "/services/duplicates")
+                : "http://" + hostName + ":" + remotePort + "/DeDup/services/duplicates";
+            final String remoteUrl = requestUrl.contains(PRODUCTION_SERVER) ? ("https://" + SERVER_HOST + "/services")
+                                                                      : ("http://" + hostName + ":" + remotePort + "/DeDup/services/");
         %>
         <form action="<%=path%>" method="post" >
             Base de dados:
